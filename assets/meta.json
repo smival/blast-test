@@ -1,0 +1,20 @@
+{
+  "version": 0,
+  "levels": [
+    {
+      "size": {
+        "x": 12, "y": 12
+      },
+      "shuffle": {
+        "maxValue": 3
+      },
+      "winPoints": {
+        "maxValue": 300
+      },
+      "winSteps": {
+        "maxValue": 10
+      }
+    }
+  ]
+
+}
