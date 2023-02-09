@@ -59,8 +59,16 @@ export class ViewSystem extends AppSystem {
                 }
             });
             if (entity instanceof TileEntity) {
-                if (!this.level.grid.getCell(entity.getComponent(TileComponent).position)) {
+                const tileComp = entity.getComponent(TileComponent);
+                const viewComp = entity.getComponent(ViewComponent);
+                // remove tile
+                if (viewComp.removed) {
                     engine.remove(entity.id as number);
+                } // move tile
+                else if (viewComp.moved) {
+                    viewComp.moved = false;
+                    const view = viewComp.views[0];
+                    view.position.set(tileComp.position.x * view.width, tileComp.position.y * view.height);
                 }
             }
         });

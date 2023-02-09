@@ -1,6 +1,10 @@
 import {Point} from "pixi.js";
 
-export class Grid<T extends object>
+export interface GridCell {
+    position: Point;
+}
+
+export class Grid<T extends GridCell>
 {
     private _grid: T[][];
 
@@ -39,8 +43,42 @@ export class Grid<T extends object>
         return list;
     }
 
+    public dropCellsToFreePositions(column: number): T[] {
+        const cells = this.getCol(column).concat();
+        const affectedCells: T[] = [];
+        let moveDelta = 0;
+        for (let i=cells.length-1; i>=0; i--) {
+            const curCell = cells[i];
+            if(curCell) {
+                if (moveDelta) {
+                    this.killCell(new Point(column, i));
+                    this.putCell(new Point(column, i+moveDelta), curCell);
+                    affectedCells.push(curCell);
+                }
+            } else {
+               moveDelta++;
+            }
+        }
+
+        return affectedCells;
+    }
+
+    public getCol(row: number): T[] {
+        return this._grid[row];
+    }
+
+    public getRow(column: number): T[] {
+        const result: T[] = [];
+        this._grid.forEach(row => {
+            result.push(row[column]);
+        });
+
+        return result;
+    }
+
     public putCell(pos: Point, cell: T) {
         this._grid[pos.x][pos.y] = cell;
+        cell.position = pos.clone();
     }
 
     public getCell(pos: Point): T | null {
@@ -50,7 +88,7 @@ export class Grid<T extends object>
        return null;
     }
 
-    public cleanCell(pos: Point): void {
+    public killCell(pos: Point): void {
         if (this._grid[pos.x] && this._grid[pos.x][pos.y]) {
             this._grid[pos.x][pos.y] = null;
         }

@@ -4,6 +4,8 @@ import {Container} from "pixi.js";
 export class ViewComponent implements Component {
     views: Container[];
     layerName: ELayerName;
+    moved: boolean;
+    removed: boolean;
 }
 
 export enum ELayerName {

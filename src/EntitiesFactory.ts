@@ -56,6 +56,8 @@ export class EntitiesFactory
         view.scale.set(0.2);
         view.position.set(position.x * view.width, position.y * view.height);
         entity.getComponent(ViewComponent).layerName = ELayerName.game;
+        entity.getComponent(ViewComponent).moved = false;
+        entity.getComponent(ViewComponent).removed = false;
 
         entity.putComponent(UIComponent);
         entity.getComponent(UIComponent).ui = view;

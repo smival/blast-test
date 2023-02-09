@@ -32,27 +32,25 @@ export class GameEngine extends Engine {
 
         this._systemsList = [
             new AddRemoveEntitySystem(0),
-            new ViewSystem(2),
             new UISystem(1),
             new TileKillerSystem(100),
             new TileSpawnerSystem(101),
             new TileAnimateSystem(102),
+            new ViewSystem(2),
         ];
         this._pane = new Pane();
         const PARAMS = {
             AddRemoveEntitySystem: true,
-            ViewSystem: true,
             UISystem: true,
             TileKillerSystem: true,
             TileSpawnerSystem: true,
-            TileAnimateSystem: true
+            TileAnimateSystem: true,
+            ViewSystem: true,
         };
 
         const paneFolder = this._pane.addFolder({title:"admin", expanded: false})
             .addFolder({title:"working systems"});
         paneFolder.addInput(PARAMS, "AddRemoveEntitySystem")
-            .on("change", (ev) => this.onPaneSystemClick(ev));
-        paneFolder.addInput(PARAMS, "ViewSystem")
             .on("change", (ev) => this.onPaneSystemClick(ev));
         paneFolder.addInput(PARAMS, "UISystem")
             .on("change", (ev) => this.onPaneSystemClick(ev));
@@ -61,6 +59,8 @@ export class GameEngine extends Engine {
         paneFolder.addInput(PARAMS, "TileSpawnerSystem")
             .on("change", (ev) => this.onPaneSystemClick(ev));
         paneFolder.addInput(PARAMS, "TileAnimateSystem")
+            .on("change", (ev) => this.onPaneSystemClick(ev));
+        paneFolder.addInput(PARAMS, "ViewSystem")
             .on("change", (ev) => this.onPaneSystemClick(ev));
 
         const FontFaceObserver = require('fontfaceobserver');

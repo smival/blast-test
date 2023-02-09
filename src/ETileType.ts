@@ -1,7 +1,7 @@
 export enum ETileType {
-    red,
-    green,
-    yellow,
-    purple,
-    blue
+    red = "red",
+    green = "green",
+    yellow = "yellow",
+    purple = "purple",
+    blue = "blue"
 }

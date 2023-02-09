@@ -1,6 +1,7 @@
 ### Done
 - [x] Draw init Tiles
 - [x] Kill Tiles
+- [x] Old Tiles falling
 
 ### Todos
 - [ ] Spawn new Tiles
