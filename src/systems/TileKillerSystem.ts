@@ -33,17 +33,16 @@ export class TileKillerSystem extends AppSystem {
         let movedTilesComps:TileComponent[] = [];
         let hasBlast = false;
 
-        // blast
         this.tilesFamily.entities.filter(tileEntity => tileEntity.getComponent(UIComponent).triggered)
             .forEach(triggeredTileEntity => {
                 triggeredTileEntity.getComponent(UIComponent).cleanTriggered();
-
+                // check blast
                 blastTilesComps = blastTilesComps.concat(
                     this.level.grid.getCellNeighborsByProp(
                     triggeredTileEntity.getComponent(TileComponent).position,
                     "type"
                 ));
-
+                // blast
                 if (blastTilesComps.length >= this.level.blastSize) {
                     hasBlast = true;
                     const affectedCols = [];
@@ -53,6 +52,7 @@ export class TileKillerSystem extends AppSystem {
                             affectedCols.push(tileComp.position.x);
                         }
                     })
+                    // move old tiles
                     affectedCols.forEach(col => {
                         movedTilesComps = movedTilesComps.concat(this.level.grid.dropCellsToFreePositions(col));
                     });

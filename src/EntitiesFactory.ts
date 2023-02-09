@@ -27,16 +27,7 @@ export class EntitiesFactory
         const comp = entity.getComponent(LevelComponent<TileComponent>);
         comp.blastSize = 3;
         comp.grid = new Grid<TileComponent>();
-        comp.grid.createSquare(size, TileComponent);
-        for (let i=0; i<size; i++) {
-            for (let j=0; j<size; j++) {
-                const newTile = EntitiesFactory.createTile(new Point(i, j));
-                engine.add(newTile);
-                comp.grid.putCell(
-                    new Point(i, j), newTile.getComponent(TileComponent)
-                );
-            }
-        }
+        comp.grid.createSquare(size);
 
         return entity;
     }

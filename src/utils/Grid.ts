@@ -7,13 +7,15 @@ export interface GridCell {
 export class Grid<T extends GridCell>
 {
     private _grid: T[][];
+    private _size: number = 0;
 
-    public createSquare(size: number, type: (new () => T)): T[][] {
+    public createSquare(size: number): T[][] {
         this._grid = new Array(size)
-            .fill(new type())
+            .fill(null)
             .map(() =>
-                new Array(size).fill(new type())
+                new Array(size).fill(null)
             );
+        this._size = size;
         return this._grid;
     }
 
@@ -61,6 +63,19 @@ export class Grid<T extends GridCell>
         }
 
         return affectedCells;
+    }
+
+    public getFreeCells(): Point[] {
+        const result: Point[] = [];
+        for (let i=0; i<this._size; i++) {
+            for (let j=0; j<this._size; j++) {
+                const pos = new Point(i, j);
+                if (!this.getCell(pos)) {
+                    result.push(pos);
+                }
+            }
+        }
+        return result;
     }
 
     public getCol(row: number): T[] {

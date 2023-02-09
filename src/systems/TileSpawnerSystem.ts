@@ -2,9 +2,12 @@ import {AppSystem} from "./AppSystem";
 import {Family, FamilyBuilder} from "@nova-engine/ecs";
 import {GameEngine} from "../GameEngine";
 import {TileComponent} from "../components/TileComponent";
+import {LevelComponent} from "../components/LevelComponent";
+import {EntitiesFactory} from "../EntitiesFactory";
 
 export class TileSpawnerSystem extends AppSystem {
     protected tilesFamily?: Family;
+    protected level: LevelComponent<TileComponent>;
 
     constructor(priority: number)
     {
@@ -17,10 +20,24 @@ export class TileSpawnerSystem extends AppSystem {
         this.tilesFamily = new FamilyBuilder(engine)
             .include(TileComponent)
             .build();
+        const levelFamily = new FamilyBuilder(engine)
+            .include(LevelComponent)
+            .build();
+        this.level = levelFamily.entities[0].getComponent(LevelComponent<TileComponent>);
     }
 
+    // detect new fields available
+    // spawn new Tiles to fill those free fields
     public update(engine: GameEngine, delta: number): void
     {
+        this.level.grid.getFreeCells().forEach(newPosition => {
+            //console.log("new ", newPosition.x, newPosition.y);
 
+            const newTile = EntitiesFactory.createTile(newPosition);
+            engine.add(newTile);
+            this.level.grid.putCell(
+                newPosition, newTile.getComponent(TileComponent)
+            );
+        });
     }
 }
