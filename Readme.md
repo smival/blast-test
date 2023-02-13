@@ -3,9 +3,9 @@
 - [x] Kill Tiles
 - [x] Old Tiles falling
 - [x] Spawn new Tiles
+- [x] Animate new Tiles falling
 
 ### Todos
-- [ ] Animate new Tiles falling
 - [ ] Add UI
 - [ ] Update UI
 - [ ] Booster Bomb

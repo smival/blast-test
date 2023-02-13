@@ -36,7 +36,7 @@ export class GameEngine extends Engine {
             new TileKillerSystem(100),
             new TileSpawnerSystem(101),
             new TileAnimateSystem(102),
-            new ViewSystem(2),
+            new ViewSystem(200),
         ];
         this._pane = new Pane();
         const PARAMS = {

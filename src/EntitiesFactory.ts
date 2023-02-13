@@ -1,13 +1,14 @@
 import {TileEntity} from "./entity/game/TileEntity";
 import {ETileType} from "./ETileType";
 import {Point, Sprite, Texture} from "pixi.js";
-import {TileComponent} from "./components/TileComponent";
+import {ETileState, TileComponent} from "./components/TileComponent";
 import {UIComponent} from "./components/UIComponent";
 import {LevelEntity} from "./entity/game/LevelEntity";
 import {LevelComponent} from "./components/LevelComponent";
 import {Grid} from "./utils/Grid";
 import {GameEngine} from "./GameEngine";
 import {ELayerName, ViewComponent} from "./components/ViewComponent";
+import {MoveComponent} from "./components/MoveComponent";
 
 export class EntitiesFactory
 {
@@ -32,17 +33,22 @@ export class EntitiesFactory
         return entity;
     }
 
-    public static createTile(position: Point, type?: ETileType): TileEntity
+    public static createTile(position: Point, speed?: number): TileEntity
     {
         const entity = new TileEntity();
         entity.id = this.nextEntityId();
-        entity.putComponent(TileComponent).type = type ? type : EntitiesFactory.getRandomTile();
-        entity.getComponent(TileComponent).position = position.clone();
+        entity.putComponent(TileComponent).type = EntitiesFactory.getRandomTile();
+        entity.getComponent(TileComponent).gridPosition = position.clone();
+        entity.getComponent(TileComponent).state = ETileState.new;
+
+        entity.putComponent(MoveComponent);
+        if (speed) {
+            entity.getComponent(MoveComponent).speed = speed;
+        }
 
         let view: Sprite;
-        entity.putComponent(ViewComponent).views = [view] = [
-            EntitiesFactory.getTileView(entity.getComponent(TileComponent).type)
-        ];
+        entity.putComponent(ViewComponent).view = view =
+            EntitiesFactory.getTileView(entity.getComponent(TileComponent).type);
         view.interactive = view.interactiveChildren = true;
         view.scale.set(0.2);
         view.position.set(position.x * view.width, position.y * view.height);

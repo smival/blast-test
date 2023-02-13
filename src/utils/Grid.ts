@@ -1,7 +1,7 @@
 import {Point} from "pixi.js";
 
 export interface GridCell {
-    position: Point;
+    gridPosition: Point;
 }
 
 export class Grid<T extends GridCell>
@@ -19,15 +19,13 @@ export class Grid<T extends GridCell>
         return this._grid;
     }
 
-    public getCellNeighborsByProp(position: Point, propName:string): T[] {
+    public getCellNeighborsSameProps(position: Point, compareProps:Partial<T>): T[] {
         const list: T[] = [];
-        const rootCell = this.getCell(position);
-        const propValue = rootCell[propName];
         const checked = Symbol("checked");
         const getCellsInternal = (position: Point) => {
             const cell = this.getCell(position);
 
-            if (!cell || cell[checked] || cell[propName] != propValue) {
+            if (!cell || cell[checked] || !this.hasSameProps(cell, compareProps)) {
                 return;
             }
 
@@ -43,6 +41,16 @@ export class Grid<T extends GridCell>
         list.forEach(item => delete item[checked]);
         console.log(list);
         return list;
+    }
+
+    protected hasSameProps(target:T, props:Partial<T>): boolean
+    {
+        for (let key of Object.keys(props)) {
+            if (target[key] !== props[key]) {
+                return false;
+            }
+        }
+        return true;
     }
 
     public dropCellsToFreePositions(column: number): T[] {
@@ -93,7 +101,7 @@ export class Grid<T extends GridCell>
 
     public putCell(pos: Point, cell: T) {
         this._grid[pos.x][pos.y] = cell;
-        cell.position = pos.clone();
+        cell.gridPosition = pos.clone();
     }
 
     public getCell(pos: Point): T | null {

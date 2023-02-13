@@ -1,7 +1,7 @@
 import {AppSystem} from "./AppSystem";
 import {GameEngine} from "../GameEngine";
 import {Family, FamilyBuilder} from "@nova-engine/ecs";
-import {TileComponent} from "../components/TileComponent";
+import {ETileState, TileComponent} from "../components/TileComponent";
 import {UIComponent} from "../components/UIComponent";
 import {LevelComponent} from "../components/LevelComponent";
 import {ViewComponent} from "../components/ViewComponent";
@@ -33,23 +33,29 @@ export class TileKillerSystem extends AppSystem {
         let movedTilesComps:TileComponent[] = [];
         let hasBlast = false;
 
-        this.tilesFamily.entities.filter(tileEntity => tileEntity.getComponent(UIComponent).triggered)
+        this.tilesFamily.entities.filter(
+            tileEntity => tileEntity.getComponent(UIComponent).triggered
+            && tileEntity.getComponent(TileComponent).state == ETileState.playable
+        )
             .forEach(triggeredTileEntity => {
                 triggeredTileEntity.getComponent(UIComponent).cleanTriggered();
                 // check blast
                 blastTilesComps = blastTilesComps.concat(
-                    this.level.grid.getCellNeighborsByProp(
-                    triggeredTileEntity.getComponent(TileComponent).position,
-                    "type"
+                    this.level.grid.getCellNeighborsSameProps(
+                    triggeredTileEntity.getComponent(TileComponent).gridPosition,
+                        {
+                            type: triggeredTileEntity.getComponent(TileComponent).type,
+                            state: ETileState.playable
+                        }
                 ));
                 // blast
                 if (blastTilesComps.length >= this.level.blastSize) {
                     hasBlast = true;
                     const affectedCols = [];
                     blastTilesComps.forEach(tileComp => {
-                        this.level.grid.killCell(tileComp.position);
-                        if (affectedCols.indexOf(tileComp.position.x) == -1) {
-                            affectedCols.push(tileComp.position.x);
+                        this.level.grid.killCell(tileComp.gridPosition);
+                        if (affectedCols.indexOf(tileComp.gridPosition.x) == -1) {
+                            affectedCols.push(tileComp.gridPosition.x);
                         }
                     })
                     // move old tiles
@@ -66,10 +72,11 @@ export class TileKillerSystem extends AppSystem {
                     tileEntity.getComponent(ViewComponent).removed = true;
                 }
             });
-            // move
+            // falling
             this.tilesFamily.entities.forEach(tileEntity => {
                 if (movedTilesComps.indexOf(tileEntity.getComponent(TileComponent)) != -1) {
                     tileEntity.getComponent(ViewComponent).moved = true;
+                    tileEntity.getComponent(TileComponent).state = ETileState.falling
                 }
             });
         }

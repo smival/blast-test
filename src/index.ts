@@ -1,4 +1,3 @@
-import "reflect-metadata";
 import {Eng} from "./GameEngine";
 import {GameStarter} from "./GameStarter";
 

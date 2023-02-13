@@ -8,6 +8,7 @@ import {EntitiesFactory} from "../EntitiesFactory";
 export class TileSpawnerSystem extends AppSystem {
     protected tilesFamily?: Family;
     protected level: LevelComponent<TileComponent>;
+    protected firstState: boolean = true; // todo set to game state
 
     constructor(priority: number)
     {
@@ -33,11 +34,12 @@ export class TileSpawnerSystem extends AppSystem {
         this.level.grid.getFreeCells().forEach(newPosition => {
             //console.log("new ", newPosition.x, newPosition.y);
 
-            const newTile = EntitiesFactory.createTile(newPosition);
+            const newTile = EntitiesFactory.createTile(newPosition, this.firstState ? 20 : 0);
             engine.add(newTile);
             this.level.grid.putCell(
                 newPosition, newTile.getComponent(TileComponent)
             );
         });
+        this.firstState = false;
     }
 }

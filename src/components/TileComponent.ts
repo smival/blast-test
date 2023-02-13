@@ -3,7 +3,17 @@ import {ETileType} from "../ETileType";
 import {Point} from "pixi.js";
 import {GridCell} from "../utils/Grid";
 
-export class TileComponent implements Component, GridCell {
+export class TileComponent implements Component, GridCell
+{
     public type: ETileType;
-    public position: Point;
+    public gridPosition: Point;
+    public state: ETileState;
+}
+
+export enum ETileState
+{
+    new = "new",
+    falling = "falling",
+    animate = "animate",
+    playable = "playable"
 }
