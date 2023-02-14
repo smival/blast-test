@@ -5,11 +5,11 @@ import {TileComponent} from "../components/TileComponent";
 import {EGameState} from "../types/EGameState";
 import {LevelComponent} from "../components/LevelComponent";
 import {ETileState} from "../types/ETileState";
+import {ViewComponent} from "../components/ViewComponent";
 
-// game over = no tiles to blast and its last Shuffle
-// game over = not enough points for X steps
-export class GameFinishSystem extends AppSystem {
-    protected readonly targetState: EGameState = EGameState.lose;
+// has enough points
+export class GameShuffleSystem extends AppSystem {
+    protected readonly targetState: EGameState = EGameState.noSteps;
     protected tilesFamily?: Family;
     protected level: LevelComponent;
 
@@ -31,17 +31,25 @@ export class GameFinishSystem extends AppSystem {
 
     public update(engine: GameEngine, delta: number): void
     {
-        if (this.level.isGameOver) {
-            this.level.gameState = this.targetState;
-        }
-
         // wait all tiles
         const animationComplete = this.tilesFamily.entities
             .every(tileEntity => tileEntity.getComponent(TileComponent).state === ETileState.playable);
 
+        if (animationComplete && !this.level.hasSteps && this.level.hasShuffle) {
+            this.level.gameState = this.targetState;
+        }
+
         if (this.level.gameState == this.targetState && animationComplete) {
             engine.pause();
-            alert("Game is over!");
+            alert(`No any steps! Shuffle left: ${this.level.shufflesLeft}`);
+            engine.play();
+
+            this.level.incrementShuffle();
+            this.tilesFamily.entities.forEach(tileEntity => {
+                tileEntity.getComponent(ViewComponent).removed = true;
+                this.level.grid.clear();
+            });
+            this.level.gameState = EGameState.init;
         }
     }
 }

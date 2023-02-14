@@ -1,15 +1,16 @@
 import {Family, FamilyBuilder} from "@nova-engine/ecs";
 import {GameEngine} from "../GameEngine";
 import {AppSystem} from "./AppSystem";
+import {TileComponent} from "../components/TileComponent";
+import {EGameState} from "../types/EGameState";
 import {LevelComponent} from "../components/LevelComponent";
-import {ETileState, TileComponent} from "../components/TileComponent";
-import {EGameState} from "../EGameState";
+import {ETileState} from "../types/ETileState";
 
 // has enough points
 export class GameWinSystem extends AppSystem {
     protected readonly targetState: EGameState = EGameState.win;
     protected tilesFamily?: Family;
-    protected level: LevelComponent<TileComponent>;
+    protected level: LevelComponent;
 
     constructor(priority: number)
     {
@@ -24,7 +25,7 @@ export class GameWinSystem extends AppSystem {
         const levelFamily = new FamilyBuilder(engine)
             .include(LevelComponent)
             .build();
-        this.level = levelFamily.entities[0].getComponent(LevelComponent<TileComponent>);
+        this.level = levelFamily.entities[0].getComponent(LevelComponent);
     }
 
     public update(engine: GameEngine, delta: number): void

@@ -1,19 +1,12 @@
 import {Component} from "@nova-engine/ecs";
-import {ETileType} from "../ETileType";
+import {ETileType} from "../types/ETileType";
 import {Point} from "pixi.js";
-import {GridCell} from "../utils/Grid";
+import {GridCell} from "../types/Grid";
+import {ETileState} from "../types/ETileState";
 
 export class TileComponent implements Component, GridCell
 {
     public type: ETileType;
     public gridPosition: Point;
     public state: ETileState;
-}
-
-export enum ETileState
-{
-    new = "new",
-    falling = "falling",
-    animate = "animate",
-    playable = "playable"
 }

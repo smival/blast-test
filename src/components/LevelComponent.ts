@@ -1,34 +1,33 @@
-import {Component} from "@nova-engine/ecs";
-import {EGameState} from "../EGameState";
-import {Grid, GridCell} from "../utils/Grid";
-import {ILevelMeta} from "../IMeta";
+import {BaseLevelComponent} from "./BaseLevelComponent";
+import {TileComponent} from "./TileComponent";
+import {ETileState} from "../types/ETileState";
 
-export class LevelComponent<CellType extends GridCell> implements Component {
-    public grid: Grid<CellType>;
-    public gameState: EGameState;
-    public levelMeta:ILevelMeta;
-
-    public get isGameOver(): boolean
+export class LevelComponent extends BaseLevelComponent<TileComponent> {
+    // todo remove match count
+    public get hasSteps(): boolean
     {
-        return this.gameState == EGameState.playing
-            && this.levelMeta.winSteps.curValue >= this.levelMeta.winSteps.maxValue
-            && this.levelMeta.winPoints.curValue < this.levelMeta.winPoints.maxValue;
-    }
+        const checked = Symbol("checked");
+        let resultTiles = [];
 
-    public get isGameWin(): boolean
-    {
-        return this.gameState == EGameState.playing
-            && this.levelMeta.winPoints.curValue >= this.levelMeta.winPoints.maxValue;
-    }
+        for (let cell of this.grid.getNotEmptyCells()) {
+            if (cell[checked]) {
+                continue;
+            }
 
-    public makeStep(tilesCount: number): void
-    {
-        this.levelMeta.winPoints.curValue += tilesCount * 10;
-        this.levelMeta.winSteps.curValue++;
-    }
+            const list = this.grid.getCellGroupByPoint(cell.gridPosition,
+                {
+                    type: cell.type,
+                    state: ETileState.playable
+                });
+            list.forEach(cell => cell[checked] = true);
 
-    public makeShuffle(): void
-    {
-        this.levelMeta.shuffle.curValue++;
+            resultTiles = resultTiles.concat(list);
+            if (list.length >= this.levelMeta.blastSize) {
+                resultTiles.forEach(cell => delete cell[checked]);
+                return true;
+            }
+        }
+        resultTiles.forEach(cell => delete cell[checked]);
+        return false;
     }
 }

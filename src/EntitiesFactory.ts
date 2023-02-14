@@ -1,16 +1,17 @@
 import {TileEntity} from "./entity/game/TileEntity";
-import {ETileType} from "./ETileType";
+import {ETileType} from "./types/ETileType";
 import {Point, Sprite, Texture} from "pixi.js";
-import {ETileState, TileComponent} from "./components/TileComponent";
+import {TileComponent} from "./components/TileComponent";
 import {UIComponent} from "./components/UIComponent";
 import {LevelEntity} from "./entity/game/LevelEntity";
 import {LevelComponent} from "./components/LevelComponent";
-import {Grid} from "./utils/Grid";
+import {Grid} from "./types/Grid";
 import {GameEngine} from "./GameEngine";
 import {ELayerName, ViewComponent} from "./components/ViewComponent";
 import {MoveComponent} from "./components/MoveComponent";
-import {ILevelMeta} from "./IMeta";
-import {EGameState} from "./EGameState";
+import {ILevelMeta} from "./types/IMeta";
+import {EGameState} from "./types/EGameState";
+import {ETileState} from "./types/ETileState";
 
 export class EntitiesFactory
 {
@@ -24,8 +25,8 @@ export class EntitiesFactory
     {
         const entity = new LevelEntity();
         entity.id = this.nextEntityId();
-        entity.putComponent(LevelComponent<TileComponent>);
-        const comp = entity.getComponent(LevelComponent<TileComponent>);
+        entity.putComponent(LevelComponent);
+        const comp = entity.getComponent(LevelComponent);
         comp.levelMeta = meta;
         comp.grid = new Grid<TileComponent>();
         comp.grid.createGrid(comp.levelMeta.size.x, comp.levelMeta.size.y);

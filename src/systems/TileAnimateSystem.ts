@@ -1,11 +1,12 @@
 import {AppSystem} from "./AppSystem";
 import {GameEngine} from "../GameEngine";
 import {Family, FamilyBuilder} from "@nova-engine/ecs";
-import {ETileState, TileComponent} from "../components/TileComponent";
+import {TileComponent} from "../components/TileComponent";
 import {MoveComponent, MoveToTargetStrategy} from "../components/MoveComponent";
 import {Utils} from "../utils/Utils";
 import {ViewComponent} from "../components/ViewComponent";
 import {Container, Point} from "pixi.js";
+import {ETileState} from "../types/ETileState";
 
 export class TileAnimateSystem extends AppSystem {
     protected tilesFamily?: Family;
@@ -35,6 +36,7 @@ export class TileAnimateSystem extends AppSystem {
             const {view} = tileEntity.getComponent(ViewComponent);
             const tileComp = tileEntity.getComponent(TileComponent);
             tileComp.state = ETileState.animate;
+            moveComp.speed = 5;
             moveComp.strategy = new MoveToTargetStrategy();
             moveComp.startPoint = view.position.clone();
             moveComp.endPoint = new Point(

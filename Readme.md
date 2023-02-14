@@ -5,6 +5,7 @@
 - [x] Spawn new Tiles
 - [x] Animate new Tiles falling
 - [x] Check Game over and no steps
+- [x] Check no-steps and make Shuffle
 
 ### Todos
 - [ ] Add UI

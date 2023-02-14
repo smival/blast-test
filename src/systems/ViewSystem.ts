@@ -2,13 +2,14 @@ import {Entity, Family, FamilyBuilder} from "@nova-engine/ecs";
 import {Eng, GameEngine} from "../GameEngine";
 import {ViewComponent} from "../components/ViewComponent";
 import {AppSystem} from "./AppSystem";
-import {LevelComponent} from "../components/LevelComponent";
-import {ETileState, TileComponent} from "../components/TileComponent";
+import {TileComponent} from "../components/TileComponent";
 import {TileEntity} from "../entity/game/TileEntity";
+import {LevelComponent} from "../components/LevelComponent";
+import {ETileState} from "../types/ETileState";
 
 export class ViewSystem extends AppSystem {
     protected family?: Family;
-    protected level: LevelComponent<TileComponent>;
+    protected level: LevelComponent;
 
     constructor(priority: number)
     {
@@ -23,7 +24,7 @@ export class ViewSystem extends AppSystem {
         const levelFamily = new FamilyBuilder(engine)
             .include(LevelComponent)
             .build();
-        this.level = levelFamily.entities[0].getComponent(LevelComponent<TileComponent>);
+        this.level = levelFamily.entities[0].getComponent(LevelComponent);
     }
 
     public onDetach(engine: GameEngine)
@@ -62,7 +63,7 @@ export class ViewSystem extends AppSystem {
                 const viewComp = entity.getComponent(ViewComponent);
                 // remove tile
                 if (viewComp.removed) {
-                    engine.remove(entity.id as number);
+                    engine.removeEntity(entity);
                 }// move tile
                 else if (tileComp.state == ETileState.playable) {
                     view.position.set(tileComp.gridPosition.x * view.width, tileComp.gridPosition.y * view.height);

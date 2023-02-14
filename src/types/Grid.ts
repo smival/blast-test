@@ -1,6 +1,7 @@
 import {Point} from "pixi.js";
 
-export interface GridCell {
+export interface GridCell
+{
     gridPosition: Point;
 }
 
@@ -10,21 +11,21 @@ export class Grid<T extends GridCell>
     private _width: number = 0;
     private _height: number = 0;
 
-    public createGrid(width: number, height: number): T[][] {
+    public createGrid(width: number, height: number): T[][]
+    {
         this._width = width;
         this._height = height;
-        this._grid = new Array(height)
-            .fill(null)
-            .map(() =>
-                new Array(width).fill(null)
-            );
+
+        this.clear();
         return this._grid;
     }
 
-    public getCellNeighborsSameProps(position: Point, compareProps:Partial<T>): T[] {
+    public getCellGroupByPoint(position: Point, compareProps: Partial<T>): T[]
+    {
         const list: T[] = [];
         const checked = Symbol("checked");
-        const getCellsInternal = (position: Point) => {
+        const getCellsInternal = (position: Point) =>
+        {
             const cell = this.getCell(position);
 
             if (!cell || cell[checked] || !this.hasSameProps(cell, compareProps)) {
@@ -34,18 +35,18 @@ export class Grid<T extends GridCell>
             cell[checked] = true;
             list.push(cell);
 
-            getCellsInternal(new Point(position.x, position.y-1));
-            getCellsInternal(new Point(position.x, position.y+1));
-            getCellsInternal(new Point(position.x-1, position.y));
-            getCellsInternal(new Point(position.x+1, position.y));
+            getCellsInternal(new Point(position.x, position.y - 1));
+            getCellsInternal(new Point(position.x, position.y + 1));
+            getCellsInternal(new Point(position.x - 1, position.y));
+            getCellsInternal(new Point(position.x + 1, position.y));
         }
         getCellsInternal(position);
         list.forEach(item => delete item[checked]);
-        console.log(list);
+        //console.log(list);
         return list;
     }
 
-    protected hasSameProps(target:T, props:Partial<T>): boolean
+    protected hasSameProps(target: T, props: Partial<T>): boolean
     {
         for (let key of Object.keys(props)) {
             if (target[key] !== props[key]) {
@@ -55,30 +56,46 @@ export class Grid<T extends GridCell>
         return true;
     }
 
-    public dropCellsToFreePositions(column: number): T[] {
+    public dropCellsToFreePositions(column: number): T[]
+    {
         const cells = this.getCol(column).concat();
         const affectedCells: T[] = [];
         let moveDelta = 0;
-        for (let i=cells.length-1; i>=0; i--) {
+        for (let i = cells.length - 1; i >= 0; i--) {
             const curCell = cells[i];
-            if(curCell) {
+            if (curCell) {
                 if (moveDelta) {
                     this.killCell(new Point(column, i));
-                    this.putCell(new Point(column, i+moveDelta), curCell);
+                    this.putCell(new Point(column, i + moveDelta), curCell);
                     affectedCells.push(curCell);
                 }
             } else {
-               moveDelta++;
+                moveDelta++;
             }
         }
 
         return affectedCells;
     }
 
-    public getFreeCells(): Point[] {
+    public getNotEmptyCells(): T[]
+    {
+        const result: T[] = [];
+        for (let i = 0; i < this._height; i++) {
+            for (let j = 0; j < this._width; j++) {
+                const pos = new Point(i, j);
+                if (this.getCell(pos)) {
+                    result.push(this.getCell(pos));
+                }
+            }
+        }
+        return result;
+    }
+
+    public getEmptyCells(): Point[]
+    {
         const result: Point[] = [];
-        for (let i=0; i<this._height; i++) {
-            for (let j=0; j<this._width; j++) {
+        for (let i = 0; i < this._height; i++) {
+            for (let j = 0; j < this._width; j++) {
                 const pos = new Point(i, j);
                 if (!this.getCell(pos)) {
                     result.push(pos);
@@ -88,34 +105,49 @@ export class Grid<T extends GridCell>
         return result;
     }
 
-    public getCol(row: number): T[] {
+    public getCol(row: number): T[]
+    {
         return this._grid[row];
     }
 
-    public getRow(column: number): T[] {
+    public getRow(column: number): T[]
+    {
         const result: T[] = [];
-        this._grid.forEach(row => {
+        this._grid.forEach(row =>
+        {
             result.push(row[column]);
         });
 
         return result;
     }
 
-    public putCell(pos: Point, cell: T) {
+    public putCell(pos: Point, cell: T)
+    {
         this._grid[pos.x][pos.y] = cell;
         cell.gridPosition = pos.clone();
     }
 
-    public getCell(pos: Point): T | null {
+    public getCell(pos: Point): T | null
+    {
         if (this._grid[pos.x] && this._grid[pos.x][pos.y]) {
             return this._grid[pos.x][pos.y];
         }
-       return null;
+        return null;
     }
 
-    public killCell(pos: Point): void {
+    public killCell(pos: Point): void
+    {
         if (this._grid[pos.x] && this._grid[pos.x][pos.y]) {
             this._grid[pos.x][pos.y] = null;
         }
+    }
+
+    public clear(): void
+    {
+        this._grid = new Array(this._height)
+            .fill(null)
+            .map(() =>
+                new Array(this._width).fill(null)
+            );
     }
 }

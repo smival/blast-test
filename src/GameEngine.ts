@@ -1,10 +1,9 @@
 import {Container, Loader, Ticker, filters} from "pixi.js";
-import {Engine, Entity} from "@nova-engine/ecs";
-import {IMeta} from "./IMeta";
+import {Engine} from "@nova-engine/ecs";
+import {IMeta} from "./types/IMeta";
 import {System} from "@nova-engine/ecs/lib/System";
 import {Pane, TpChangeEvent} from "tweakpane";
 import {Utils} from "./utils/Utils";
-import {AddRemoveEntitySystem} from "./systems/AddRemoveEntitySystem";
 import {TileKillerSystem} from "./systems/TileKillerSystem";
 import {TileSpawnerSystem} from "./systems/TileSpawnerSystem";
 import {TileAnimateSystem} from "./systems/TileAnimateSystem";
@@ -14,13 +13,12 @@ import {ViewSystem} from "./systems/ViewSystem";
 import {ELayerName} from "./components/ViewComponent";
 import {GameFinishSystem} from "./systems/GameFinishSystem";
 import {GameWinSystem} from "./systems/GameWinSystem";
+import {GameShuffleSystem} from "./systems/GameShuffleSystem";
 
 export class GameEngine extends Engine {
     public gameMeta: IMeta;
 
     private static _instance: GameEngine;
-    private _entityToAdd: Entity[] = [];
-    private _entityToRemove: number[] = [];
     private _systemsList: System[] = [];
 
     private _time = 0;
@@ -41,14 +39,14 @@ export class GameEngine extends Engine {
         this.gameMeta = meta;
 
         this._systemsList = [
-            new AddRemoveEntitySystem(0),
             new UISystem(1),
             new TileKillerSystem(100),
             new TileSpawnerSystem(101),
             new TileAnimateSystem(102),
             new ViewSystem(200),
-            new GameWinSystem(201),
-            new GameFinishSystem(210)
+            new GameShuffleSystem(201),
+            new GameWinSystem(202),
+            new GameFinishSystem(203)
         ];
         this._pane = new Pane();
         const PARAMS = {
@@ -58,6 +56,7 @@ export class GameEngine extends Engine {
             TileSpawnerSystem: true,
             TileAnimateSystem: true,
             ViewSystem: true,
+            GameShuffleSystem: true,
             GameWinSystem: true,
             GameFinishSystem: true
         };
@@ -76,6 +75,10 @@ export class GameEngine extends Engine {
             .on("change", (ev) => this.onPaneSystemClick(ev));
         paneFolder.addInput(PARAMS, "ViewSystem")
             .on("change", (ev) => this.onPaneSystemClick(ev));
+        paneFolder.addInput(PARAMS, "GameShuffleSystem")
+            .on("change", (ev) => this.onPaneSystemClick(ev));
+        paneFolder.addInput(PARAMS, "GameWinSystem")
+            .on("change", (ev) => this.onPaneSystemClick(ev));
         paneFolder.addInput(PARAMS, "GameFinishSystem")
             .on("change", (ev) => this.onPaneSystemClick(ev));
 
@@ -90,7 +93,7 @@ export class GameEngine extends Engine {
         stage.addChild(cont).name = ELayerName.game;
         stage.addChild(new Container()).name = ELayerName.gui;
 
-        this.add(EntitiesFactory.createLevel(this, meta.levels[0]));
+        this.addEntity(EntitiesFactory.createLevel(this, meta.levels[0]));
         this._systemsList.forEach(system => {
             if (PARAMS[system.constructor.name])
                 this.addSystem(system)
@@ -153,35 +156,6 @@ export class GameEngine extends Engine {
                 this._time -= frameTime;
             }
         }
-    }
-
-    public applyAdd(): void
-    {
-        this._entityToAdd.forEach(entity => this.addEntity(entity));
-        this._entityToAdd = [];
-    }
-
-    public add(entity: Entity): void
-    {
-        //console.log(`entity will be added ${entity.constructor.name}`);
-        this._entityToAdd.push(entity);
-    }
-
-    public remove(entityId: number): void
-    {
-        //console.log(`entity will be removed ${entityId}`);
-        this._entityToRemove.push(entityId);
-    }
-
-    public applyRemove(): void
-    {
-        if (!this._entityToRemove.length) {
-            return;
-        }
-
-        const list2die = this.entities.filter(entity => this._entityToRemove.indexOf(entity.id as number) !== -1);
-        list2die.forEach(entity => this.removeEntity(entity));
-        this._entityToRemove = [];
     }
 
     public get stage(): Container {

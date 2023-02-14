@@ -1,14 +1,15 @@
 import {AppSystem} from "./AppSystem";
 import {GameEngine} from "../GameEngine";
 import {Family, FamilyBuilder} from "@nova-engine/ecs";
-import {ETileState, TileComponent} from "../components/TileComponent";
+import {TileComponent} from "../components/TileComponent";
 import {UIComponent} from "../components/UIComponent";
 import {LevelComponent} from "../components/LevelComponent";
 import {ViewComponent} from "../components/ViewComponent";
+import {ETileState} from "../types/ETileState";
 
 export class TileKillerSystem extends AppSystem {
     protected tilesFamily?: Family;
-    protected level: LevelComponent<TileComponent>;
+    protected level: LevelComponent;
 
     constructor(priority: number)
     {
@@ -24,7 +25,7 @@ export class TileKillerSystem extends AppSystem {
         const levelFamily = new FamilyBuilder(engine)
             .include(LevelComponent)
             .build();
-        this.level = levelFamily.entities[0].getComponent(LevelComponent<TileComponent>);
+        this.level = levelFamily.entities[0].getComponent(LevelComponent);
     }
 
     public update(engine: GameEngine, delta: number): void
@@ -41,7 +42,7 @@ export class TileKillerSystem extends AppSystem {
                 triggeredTileEntity.getComponent(UIComponent).cleanTriggered();
                 // check blast
                 blastTilesComps = blastTilesComps.concat(
-                    this.level.grid.getCellNeighborsSameProps(
+                    this.level.grid.getCellGroupByPoint(
                     triggeredTileEntity.getComponent(TileComponent).gridPosition,
                         {
                             type: triggeredTileEntity.getComponent(TileComponent).type,
@@ -66,7 +67,7 @@ export class TileKillerSystem extends AppSystem {
             });
 
         if (hasBlast) {
-            this.level.makeStep(blastTilesComps.length);
+            this.level.incrementStep(blastTilesComps.length);
             // remove
             this.tilesFamily.entities.forEach(tileEntity => {
                 if (blastTilesComps.indexOf(tileEntity.getComponent(TileComponent)) != -1) {
