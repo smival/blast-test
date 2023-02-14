@@ -1,6 +1,6 @@
 {
-  "name": "blast test",
-  "version": "0.0.4",
+  "name": "blast-test",
+  "version": "0.0.5",
   "description": "The blast game prototype",
   "main": "index.js",
   "scripts": {

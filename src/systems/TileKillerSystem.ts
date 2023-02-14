@@ -49,7 +49,7 @@ export class TileKillerSystem extends AppSystem {
                         }
                 ));
                 // blast
-                if (blastTilesComps.length >= this.level.blastSize) {
+                if (blastTilesComps.length >= this.level.levelMeta.blastSize) {
                     hasBlast = true;
                     const affectedCols = [];
                     blastTilesComps.forEach(tileComp => {
@@ -66,6 +66,7 @@ export class TileKillerSystem extends AppSystem {
             });
 
         if (hasBlast) {
+            this.level.makeStep(blastTilesComps.length);
             // remove
             this.tilesFamily.entities.forEach(tileEntity => {
                 if (blastTilesComps.indexOf(tileEntity.getComponent(TileComponent)) != -1) {
@@ -75,7 +76,6 @@ export class TileKillerSystem extends AppSystem {
             // falling
             this.tilesFamily.entities.forEach(tileEntity => {
                 if (movedTilesComps.indexOf(tileEntity.getComponent(TileComponent)) != -1) {
-                    tileEntity.getComponent(ViewComponent).moved = true;
                     tileEntity.getComponent(TileComponent).state = ETileState.falling
                 }
             });

@@ -4,6 +4,7 @@
 - [x] Old Tiles falling
 - [x] Spawn new Tiles
 - [x] Animate new Tiles falling
+- [x] Check Game over and no steps
 
 ### Todos
 - [ ] Add UI
@@ -11,7 +12,6 @@
 - [ ] Booster Bomb
 - [ ] Booster Teleport
 - [ ] Booster SuperTile
-- [ ] Check Game over and no steps
 - [ ] Define game states
 - [ ] Switch levels and parse its meta
 

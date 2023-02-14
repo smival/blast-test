@@ -5,6 +5,7 @@
       "size": {
         "x": 12, "y": 12
       },
+      "blastSize": 3,
       "shuffle": {
         "maxValue": 3
       },
@@ -12,7 +13,7 @@
         "maxValue": 300
       },
       "winSteps": {
-        "maxValue": 10
+        "maxValue": 7
       }
     }
   ]

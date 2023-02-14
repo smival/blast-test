@@ -1,12 +1,13 @@
-import {AppSystem} from "./AppSystem";
 import {Family, FamilyBuilder} from "@nova-engine/ecs";
 import {GameEngine} from "../GameEngine";
-import {TileComponent} from "../components/TileComponent";
+import {AppSystem} from "./AppSystem";
 import {LevelComponent} from "../components/LevelComponent";
-import {EntitiesFactory} from "../EntitiesFactory";
+import {ETileState, TileComponent} from "../components/TileComponent";
 import {EGameState} from "../EGameState";
 
-export class TileSpawnerSystem extends AppSystem {
+// has enough points
+export class GameWinSystem extends AppSystem {
+    protected readonly targetState: EGameState = EGameState.win;
     protected tilesFamily?: Family;
     protected level: LevelComponent<TileComponent>;
 
@@ -15,7 +16,6 @@ export class TileSpawnerSystem extends AppSystem {
         super();
         this.priority = priority;
     }
-
     onAttach(engine: GameEngine) {
         super.onAttach(engine);
         this.tilesFamily = new FamilyBuilder(engine)
@@ -27,22 +27,19 @@ export class TileSpawnerSystem extends AppSystem {
         this.level = levelFamily.entities[0].getComponent(LevelComponent<TileComponent>);
     }
 
-    // detect new fields available
-    // spawn new Tiles to fill those free fields
     public update(engine: GameEngine, delta: number): void
     {
-        this.level.grid.getFreeCells().forEach(newPosition => {
-            //console.log("new ", newPosition.x, newPosition.y);
+        if (this.level.isGameWin) {
+            this.level.gameState = this.targetState;
+        }
 
-            const newTile = EntitiesFactory.createTile(
-                newPosition,
-                this.level.gameState == EGameState.init ? 20 : 0
-            );
-            engine.add(newTile);
-            this.level.grid.putCell(
-                newPosition, newTile.getComponent(TileComponent)
-            );
-        });
-        this.level.gameState = EGameState.playing;
+        // wait all tiles
+        const animationComplete = this.tilesFamily.entities
+            .every(tileEntity => tileEntity.getComponent(TileComponent).state === ETileState.playable);
+
+        if (this.level.gameState == this.targetState && animationComplete) {
+            engine.pause();
+            alert("Congrats! You are winner! Lets play next level");
+        }
     }
 }

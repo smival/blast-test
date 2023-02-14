@@ -7,15 +7,17 @@ export interface GridCell {
 export class Grid<T extends GridCell>
 {
     private _grid: T[][];
-    private _size: number = 0;
+    private _width: number = 0;
+    private _height: number = 0;
 
-    public createSquare(size: number): T[][] {
-        this._grid = new Array(size)
+    public createGrid(width: number, height: number): T[][] {
+        this._width = width;
+        this._height = height;
+        this._grid = new Array(height)
             .fill(null)
             .map(() =>
-                new Array(size).fill(null)
+                new Array(width).fill(null)
             );
-        this._size = size;
         return this._grid;
     }
 
@@ -75,8 +77,8 @@ export class Grid<T extends GridCell>
 
     public getFreeCells(): Point[] {
         const result: Point[] = [];
-        for (let i=0; i<this._size; i++) {
-            for (let j=0; j<this._size; j++) {
+        for (let i=0; i<this._height; i++) {
+            for (let j=0; j<this._width; j++) {
                 const pos = new Point(i, j);
                 if (!this.getCell(pos)) {
                     result.push(pos);

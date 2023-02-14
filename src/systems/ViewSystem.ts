@@ -3,7 +3,7 @@ import {Eng, GameEngine} from "../GameEngine";
 import {ViewComponent} from "../components/ViewComponent";
 import {AppSystem} from "./AppSystem";
 import {LevelComponent} from "../components/LevelComponent";
-import {TileComponent} from "../components/TileComponent";
+import {ETileState, TileComponent} from "../components/TileComponent";
 import {TileEntity} from "../entity/game/TileEntity";
 
 export class ViewSystem extends AppSystem {
@@ -56,19 +56,17 @@ export class ViewSystem extends AppSystem {
             const {view} = entity.getComponent(ViewComponent);
             if (!view.parent) {
                 engine.addToLayer(view, entity.getComponent(ViewComponent).layerName);
-            };
+            }
             if (entity instanceof TileEntity) {
                 const tileComp = entity.getComponent(TileComponent);
                 const viewComp = entity.getComponent(ViewComponent);
                 // remove tile
                 if (viewComp.removed) {
                     engine.remove(entity.id as number);
-                } /* move tile
-                else if (viewComp.moved) {
-                    viewComp.moved = false;
-                    const view = viewComp.views[0];
+                }// move tile
+                else if (tileComp.state == ETileState.playable) {
                     view.position.set(tileComp.gridPosition.x * view.width, tileComp.gridPosition.y * view.height);
-                };*/
+                }
             }
         });
     }

@@ -2,6 +2,6 @@ export enum EGameState {
     init,
     playing,
     noSteps,
-    loss,
+    lose,
     win
 }

@@ -1,4 +1,4 @@
-import {Container, Loader, Ticker} from "pixi.js";
+import {Container, Loader, Ticker, filters} from "pixi.js";
 import {Engine, Entity} from "@nova-engine/ecs";
 import {IMeta} from "./IMeta";
 import {System} from "@nova-engine/ecs/lib/System";
@@ -12,9 +12,11 @@ import {UISystem} from "./systems/UISystem";
 import {EntitiesFactory} from "./EntitiesFactory";
 import {ViewSystem} from "./systems/ViewSystem";
 import {ELayerName} from "./components/ViewComponent";
+import {GameFinishSystem} from "./systems/GameFinishSystem";
+import {GameWinSystem} from "./systems/GameWinSystem";
 
 export class GameEngine extends Engine {
-    public meta: IMeta;
+    public gameMeta: IMeta;
 
     private static _instance: GameEngine;
     private _entityToAdd: Entity[] = [];
@@ -22,6 +24,7 @@ export class GameEngine extends Engine {
     private _systemsList: System[] = [];
 
     private _time = 0;
+    private _pause: boolean = false;
     private readonly _speed: number = 1;
 
     private _stage: Container;
@@ -30,6 +33,13 @@ export class GameEngine extends Engine {
     public async start(stage: Container): Promise<void> {
         this._stage = stage;
 
+        const FontFaceObserver = require('fontfaceobserver');
+        const font = new FontFaceObserver('Roboto Condensed');
+
+        await Promise.all([this.loadAssets(), font.load()]);
+        const meta = Loader.shared.resources["meta.json"].data as IMeta;
+        this.gameMeta = meta;
+
         this._systemsList = [
             new AddRemoveEntitySystem(0),
             new UISystem(1),
@@ -37,6 +47,8 @@ export class GameEngine extends Engine {
             new TileSpawnerSystem(101),
             new TileAnimateSystem(102),
             new ViewSystem(200),
+            new GameWinSystem(201),
+            new GameFinishSystem(210)
         ];
         this._pane = new Pane();
         const PARAMS = {
@@ -46,6 +58,8 @@ export class GameEngine extends Engine {
             TileSpawnerSystem: true,
             TileAnimateSystem: true,
             ViewSystem: true,
+            GameWinSystem: true,
+            GameFinishSystem: true
         };
 
         const paneFolder = this._pane.addFolder({title:"admin", expanded: false})
@@ -62,13 +76,8 @@ export class GameEngine extends Engine {
             .on("change", (ev) => this.onPaneSystemClick(ev));
         paneFolder.addInput(PARAMS, "ViewSystem")
             .on("change", (ev) => this.onPaneSystemClick(ev));
-
-        const FontFaceObserver = require('fontfaceobserver');
-        const font = new FontFaceObserver('Roboto Condensed');
-
-        await Promise.all([this.loadAssets(), font.load()]);
-        const meta = Loader.shared.resources["meta.json"].data as IMeta;
-        this.meta = meta;
+        paneFolder.addInput(PARAMS, "GameFinishSystem")
+            .on("change", (ev) => this.onPaneSystemClick(ev));
 
         Ticker.shared.maxFPS = 60;
         Ticker.shared.minFPS = 10;
@@ -81,8 +90,11 @@ export class GameEngine extends Engine {
         stage.addChild(cont).name = ELayerName.game;
         stage.addChild(new Container()).name = ELayerName.gui;
 
-        this.add(EntitiesFactory.createLevel(this));
-        this._systemsList.forEach(system => this.addSystem(system));
+        this.add(EntitiesFactory.createLevel(this, meta.levels[0]));
+        this._systemsList.forEach(system => {
+            if (PARAMS[system.constructor.name])
+                this.addSystem(system)
+        });
     }
 
     protected onPaneSystemClick(e: TpChangeEvent<boolean>):void {
@@ -98,6 +110,11 @@ export class GameEngine extends Engine {
     {
         this.stage.getChildByName<Container>(layer ? layer : ELayerName.stage)
             .addChild(view);
+    }
+
+    public getLayer(layerName: ELayerName): Container
+    {
+        return this.stage.getChildByName<Container>(layerName);
     }
 
     protected async loadAssets(): Promise<void> {
@@ -120,6 +137,9 @@ export class GameEngine extends Engine {
 
     public update(delta: number): void
     {
+        if (this._pause) {
+            return;
+        }
         const frameTime = 1 / Ticker.shared.maxFPS;
         this._time += (Ticker.shared.deltaMS / 1000) * this._speed;
         let count = Math.min(
@@ -166,6 +186,22 @@ export class GameEngine extends Engine {
 
     public get stage(): Container {
         return this._stage;
+    }
+
+    public pause(): void
+    {
+        this._pause = true;
+        this.getLayer(ELayerName.game).interactiveChildren = false;
+        const colorMatrix = new filters.ColorMatrixFilter();
+        this.getLayer(ELayerName.game).filters = [colorMatrix];
+        colorMatrix.brightness(0.5, false);
+    }
+
+    public play(): void
+    {
+        this._pause = false;
+        this.getLayer(ELayerName.game).interactiveChildren = true;
+        this.getLayer(ELayerName.game).filters = [];
     }
 }
 
