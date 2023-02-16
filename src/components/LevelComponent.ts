@@ -3,7 +3,6 @@ import {TileComponent} from "./TileComponent";
 import {ETileState} from "../types/ETileState";
 
 export class LevelComponent extends BaseLevelComponent<TileComponent> {
-    // todo remove match count
     public get hasSteps(): boolean
     {
         const checked = Symbol("checked");

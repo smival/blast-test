@@ -3,7 +3,7 @@ import {Eng, GameEngine} from "../GameEngine";
 import {ViewComponent} from "../components/ViewComponent";
 import {AppSystem} from "./AppSystem";
 import {TileComponent} from "../components/TileComponent";
-import {TileEntity} from "../entity/game/TileEntity";
+import {TileEntity} from "../entity/TileEntity";
 import {LevelComponent} from "../components/LevelComponent";
 import {ETileState} from "../types/ETileState";
 

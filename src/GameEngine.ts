@@ -1,4 +1,4 @@
-import {Container, Loader, Ticker, filters} from "pixi.js";
+import {Container, filters, Loader, NineSlicePlane, Texture, Ticker} from "pixi.js";
 import {Engine} from "@nova-engine/ecs";
 import {IMeta} from "./types/IMeta";
 import {System} from "@nova-engine/ecs/lib/System";
@@ -14,6 +14,11 @@ import {ELayerName} from "./components/ViewComponent";
 import {GameFinishSystem} from "./systems/GameFinishSystem";
 import {GameWinSystem} from "./systems/GameWinSystem";
 import {GameShuffleSystem} from "./systems/GameShuffleSystem";
+import {ProgressUI} from "./ui/ProgressUI";
+import {Counter0UI} from "./ui/Counter0UI";
+import {Counter1UI} from "./ui/Counter1UI";
+import {Counter2UI} from "./ui/Counter2UI";
+import {PointsCounterUI} from "./ui/PointsCounterUI";
 
 export class GameEngine extends Engine {
     public gameMeta: IMeta;
@@ -33,8 +38,9 @@ export class GameEngine extends Engine {
 
         const FontFaceObserver = require('fontfaceobserver');
         const font = new FontFaceObserver('Roboto Condensed');
+        const font2 = new FontFaceObserver('Marvin');
 
-        await Promise.all([this.loadAssets(), font.load()]);
+        await Promise.all([this.loadAssets(), font.load(), font2.load()]);
         const meta = Loader.shared.resources["meta.json"].data as IMeta;
         this.gameMeta = meta;
 
@@ -50,7 +56,6 @@ export class GameEngine extends Engine {
         ];
         this._pane = new Pane();
         const PARAMS = {
-            AddRemoveEntitySystem: true,
             UISystem: true,
             TileKillerSystem: true,
             TileSpawnerSystem: true,
@@ -63,8 +68,6 @@ export class GameEngine extends Engine {
 
         const paneFolder = this._pane.addFolder({title:"admin", expanded: false})
             .addFolder({title:"working systems"});
-        paneFolder.addInput(PARAMS, "AddRemoveEntitySystem")
-            .on("change", (ev) => this.onPaneSystemClick(ev));
         paneFolder.addInput(PARAMS, "UISystem")
             .on("change", (ev) => this.onPaneSystemClick(ev));
         paneFolder.addInput(PARAMS, "TileKillerSystem")
@@ -87,17 +90,30 @@ export class GameEngine extends Engine {
         Ticker.shared.add((dt) => this.update(dt));
 
         const cont = stage.addChild(new Container());
-        cont.position.set(100, 100);
+        cont.position.set(130, 130);
 
         stage.addChild(new Container()).name = ELayerName.stage;
-        stage.addChild(cont).name = ELayerName.game;
         stage.addChild(new Container()).name = ELayerName.gui;
+        stage.addChild(cont).name = ELayerName.game;
 
         this.addEntity(EntitiesFactory.createLevel(this, meta.levels[0]));
         this._systemsList.forEach(system => {
             if (PARAMS[system.constructor.name])
                 this.addSystem(system)
         });
+
+        // field
+        const fieldBg = new NineSlicePlane(Texture.from('field_bg.png'), 46, 46, 46, 46);
+        fieldBg.width = 470;
+        fieldBg.height = 530;
+        fieldBg.position.set(100, 100);
+
+        this.addEntity(EntitiesFactory.createUICounter(this.addToLayer(new ProgressUI(), ELayerName.gui)));
+        this.addEntity(EntitiesFactory.createUICounter(this.addToLayer(new Counter0UI(), ELayerName.gui)));
+        this.addEntity(EntitiesFactory.createUICounter(this.addToLayer(new Counter1UI(), ELayerName.gui)));
+        this.addEntity(EntitiesFactory.createUICounter(this.addToLayer(new Counter2UI(), ELayerName.gui)));
+        this.addEntity(EntitiesFactory.createUICounter(this.addToLayer(new PointsCounterUI(), ELayerName.gui)));
+        this.addEntity(EntitiesFactory.createUICounter(this.addToLayer(fieldBg, ELayerName.gui)));
     }
 
     protected onPaneSystemClick(e: TpChangeEvent<boolean>):void {
@@ -109,9 +125,9 @@ export class GameEngine extends Engine {
         }
     }
 
-    public addToLayer(view: Container, layer?: ELayerName): void
+    public addToLayer(view: Container, layer?: ELayerName): Container
     {
-        this.stage.getChildByName<Container>(layer ? layer : ELayerName.stage)
+        return this.stage.getChildByName<Container>(layer ? layer : ELayerName.stage)
             .addChild(view);
     }
 

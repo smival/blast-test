@@ -6,10 +6,10 @@
 - [x] Animate new Tiles falling
 - [x] Check Game over and no steps
 - [x] Check no-steps and make Shuffle
+- [x] Add UI
+- [ ] Update UI
 
 ### Todos
-- [ ] Add UI
-- [ ] Update UI
 - [ ] Booster Bomb
 - [ ] Booster Teleport
 - [ ] Booster SuperTile

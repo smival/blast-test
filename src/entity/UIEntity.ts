@@ -1,5 +1,5 @@
 import { Entity } from "@nova-engine/ecs";
 
-export class ButtonEntity extends Entity {
+export class UIEntity extends Entity {
     
 }

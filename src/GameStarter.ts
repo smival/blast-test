@@ -7,7 +7,9 @@ export class GameStarter {
     private _stats: Stats;
 
     constructor() {
-        this._renderer = autoDetectRenderer({width: 1300, height: 700, backgroundColor: 0x1099bb});
+        this._renderer = autoDetectRenderer(
+            {width: 1300, height: 700, backgroundColor: 0xa1a1a1, forceCanvas:true}
+        );
         this._stage = new Container();
 
         this._stats = new Stats();

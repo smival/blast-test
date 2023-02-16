@@ -1,9 +1,9 @@
-import {TileEntity} from "./entity/game/TileEntity";
+import {TileEntity} from "./entity/TileEntity";
 import {ETileType} from "./types/ETileType";
-import {Point, Sprite, Texture} from "pixi.js";
+import {Container, Point, Sprite, Texture} from "pixi.js";
 import {TileComponent} from "./components/TileComponent";
 import {UIComponent} from "./components/UIComponent";
-import {LevelEntity} from "./entity/game/LevelEntity";
+import {LevelEntity} from "./entity/LevelEntity";
 import {LevelComponent} from "./components/LevelComponent";
 import {Grid} from "./types/Grid";
 import {GameEngine} from "./GameEngine";
@@ -12,6 +12,8 @@ import {MoveComponent} from "./components/MoveComponent";
 import {ILevelMeta} from "./types/IMeta";
 import {EGameState} from "./types/EGameState";
 import {ETileState} from "./types/ETileState";
+import {UIEntity} from "./entity/UIEntity";
+import {BaseCounterUI} from "./ui/BaseCounterUI";
 
 export class EntitiesFactory
 {
@@ -19,6 +21,15 @@ export class EntitiesFactory
     protected static nextEntityId(): number
     {
         return ++EntitiesFactory._nextEntityId;
+    }
+
+    public static createUICounter(view: Container): UIEntity
+    {
+        const entity = new UIEntity();
+        entity.id = this.nextEntityId();
+        entity.putComponent(UIComponent).counter = view as BaseCounterUI;
+
+        return entity;
     }
 
     public static createLevel(engine:GameEngine, meta:ILevelMeta): LevelEntity
