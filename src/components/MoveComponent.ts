@@ -2,7 +2,8 @@ import {Component} from "@nova-engine/ecs";
 import {Point} from "pixi.js";
 import {Utils} from "../utils/Utils";
 
-export class MoveComponent implements Component {
+export class MoveComponent implements Component
+{
     private _strategy: IMoveStrategy;
     enabled: boolean = false; // todo remove and use start/end point
     speed: number = 4;
@@ -26,18 +27,24 @@ export class MoveComponent implements Component {
     }
 }
 
-export class MoveToTargetStrategy implements IMoveStrategy {
-    onStart(comp: MoveComponent):void {
+export class MoveToTargetStrategy implements IMoveStrategy
+{
+    onStart(comp: MoveComponent): void
+    {
         comp.startPoint = comp.curPoint || comp.startPoint;
         comp.pathLength = Utils.len(Utils.delta(comp.startPoint, comp.endPoint));
     }
-    onFinish(comp: MoveComponent): void {
+
+    onFinish(comp: MoveComponent): void
+    {
         comp.enabled = false;
         comp.startPoint = null;
     }
 }
 
-export interface IMoveStrategy {
-    onStart(comp: MoveComponent):void;
+export interface IMoveStrategy
+{
+    onStart(comp: MoveComponent): void;
+
     onFinish(comp: MoveComponent): void;
 }

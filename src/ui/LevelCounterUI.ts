@@ -1,7 +1,8 @@
 import {Sprite, Text, Texture} from "pixi.js";
 import {BaseCounterUI} from "./BaseCounterUI";
 
-export class LevelCounterUI extends BaseCounterUI {
+export class LevelCounterUI extends BaseCounterUI
+{
     private readonly _counter: Text;
 
     constructor()

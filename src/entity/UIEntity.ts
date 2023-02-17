@@ -1,5 +1,6 @@
-import { Entity } from "@nova-engine/ecs";
+import {Entity} from "@nova-engine/ecs";
 
-export class UIEntity extends Entity {
-    
+export class UIEntity extends Entity
+{
+
 }

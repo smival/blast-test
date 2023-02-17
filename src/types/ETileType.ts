@@ -1,4 +1,5 @@
-export enum ETileType {
+export enum ETileType
+{
     red = "red",
     green = "green",
     yellow = "yellow",

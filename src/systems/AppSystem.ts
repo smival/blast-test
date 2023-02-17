@@ -2,7 +2,8 @@ import {System} from "@nova-engine/ecs/lib/System";
 import {GameEngine} from "../GameEngine";
 import {EngineEntityListener, Entity} from "@nova-engine/ecs";
 
-export abstract class AppSystem extends System implements EngineEntityListener{
+export abstract class AppSystem extends System implements EngineEntityListener
+{
     public update(engine: GameEngine, delta: number): void
     {
 

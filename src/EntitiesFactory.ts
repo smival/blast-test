@@ -18,6 +18,7 @@ import {BaseCounterUI} from "./ui/BaseCounterUI";
 export class EntitiesFactory
 {
     protected static _nextEntityId: number = 0;
+
     protected static nextEntityId(): number
     {
         return ++EntitiesFactory._nextEntityId;
@@ -32,7 +33,7 @@ export class EntitiesFactory
         return entity;
     }
 
-    public static createGame(engine:GameEngine, meta:IMeta): LevelEntity
+    public static createGame(engine: GameEngine, meta: IMeta): LevelEntity
     {
         const entity = new LevelEntity();
         entity.id = this.nextEntityId();

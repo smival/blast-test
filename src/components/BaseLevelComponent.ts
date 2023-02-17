@@ -3,7 +3,8 @@ import {EGameState} from "../types/EGameState";
 import {Grid, GridCell} from "../types/Grid";
 import {BoosterMeta, ILevelMeta} from "../types/IMeta";
 
-export class BaseLevelComponent<CellType extends GridCell> implements Component {
+export class BaseLevelComponent<CellType extends GridCell> implements Component
+{
     public grid: Grid<CellType>;
     public gameState: EGameState;
     public boosters: BoosterMeta;

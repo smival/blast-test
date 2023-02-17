@@ -18,7 +18,8 @@ export class Utils
     }
 
     // Vector
-    public static getPosOnLine(p0:Point, p1:Point, percentage: number): Point {
+    public static getPosOnLine(p0: Point, p1: Point, percentage: number): Point
+    {
         return new Point(
             p0.x * (1.0 - percentage) + p1.x * percentage,
             p0.y * (1.0 - percentage) + p1.y * percentage
@@ -30,11 +31,13 @@ export class Utils
         return Math.sqrt(v.x * v.x + v.y * v.y);
     }
 
-    public static delta(p0:Point, p1:Point):Point {
+    public static delta(p0: Point, p1: Point): Point
+    {
         return new Point(p1.x - p0.x, p1.y - p0.y);
     }
 
-    public static angle(p0:Point, p1:Point): number {
+    public static angle(p0: Point, p1: Point): number
+    {
         return Math.atan2(p1.y - p0.y, p1.x - p0.x) * 180 / Math.PI;
     }
 }

@@ -2,7 +2,8 @@ import {BaseLevelComponent} from "./BaseLevelComponent";
 import {TileComponent} from "./TileComponent";
 import {ETileState} from "../types/ETileState";
 
-export class LevelComponent extends BaseLevelComponent<TileComponent> {
+export class LevelComponent extends BaseLevelComponent<TileComponent>
+{
     public get hasSteps(): boolean
     {
         const checked = Symbol("checked");

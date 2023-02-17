@@ -6,7 +6,8 @@ import {EntitiesFactory} from "../EntitiesFactory";
 import {EGameState} from "../types/EGameState";
 import {LevelComponent} from "../components/LevelComponent";
 
-export class TileSpawnerSystem extends AppSystem {
+export class TileSpawnerSystem extends AppSystem
+{
     protected tilesFamily?: Family;
     protected level: LevelComponent;
 
@@ -16,7 +17,8 @@ export class TileSpawnerSystem extends AppSystem {
         this.priority = priority;
     }
 
-    onAttach(engine: GameEngine) {
+    onAttach(engine: GameEngine)
+    {
         super.onAttach(engine);
         this.tilesFamily = new FamilyBuilder(engine)
             .include(TileComponent)
@@ -31,7 +33,8 @@ export class TileSpawnerSystem extends AppSystem {
     // spawn new Tiles to fill those free fields
     public update(engine: GameEngine, delta: number): void
     {
-        this.level.grid.getEmptyCells().forEach(newPosition => {
+        this.level.grid.getEmptyCells().forEach(newPosition =>
+        {
             //console.log("new ", newPosition.x, newPosition.y);
 
             const newTile = EntitiesFactory.createTile(

@@ -7,7 +7,8 @@ import {LevelComponent} from "../components/LevelComponent";
 import {ETileState} from "../types/ETileState";
 
 // has enough points
-export class GameWinSystem extends AppSystem {
+export class GameWinSystem extends AppSystem
+{
     protected readonly targetState: EGameState = EGameState.win;
     protected tilesFamily?: Family;
     protected level: LevelComponent;
@@ -17,7 +18,9 @@ export class GameWinSystem extends AppSystem {
         super();
         this.priority = priority;
     }
-    onAttach(engine: GameEngine) {
+
+    onAttach(engine: GameEngine)
+    {
         super.onAttach(engine);
         this.tilesFamily = new FamilyBuilder(engine)
             .include(TileComponent)

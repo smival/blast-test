@@ -7,7 +7,8 @@ import {TileEntity} from "../entity/TileEntity";
 import {LevelComponent} from "../components/LevelComponent";
 import {ETileState} from "../types/ETileState";
 
-export class ViewSystem extends AppSystem {
+export class ViewSystem extends AppSystem
+{
     protected family?: Family;
     protected level: LevelComponent;
 
@@ -16,7 +17,9 @@ export class ViewSystem extends AppSystem {
         super();
         this.priority = priority;
     }
-    onAttach(engine: GameEngine) {
+
+    onAttach(engine: GameEngine)
+    {
         super.onAttach(engine);
         this.family = new FamilyBuilder(engine)
             .include(ViewComponent)
@@ -29,7 +32,8 @@ export class ViewSystem extends AppSystem {
 
     public onDetach(engine: GameEngine)
     {
-        this.family.entities.forEach(entity => {
+        this.family.entities.forEach(entity =>
+        {
             this.removeEntityView(engine, entity);
         });
         super.onDetach(engine);
@@ -38,12 +42,13 @@ export class ViewSystem extends AppSystem {
     public onEntityRemoved(entity: Entity)
     {
         super.onEntityRemoved(entity);
-        if(entity.hasComponent(ViewComponent)) {
+        if (entity.hasComponent(ViewComponent)) {
             this.removeEntityView(Eng, entity);
         }
     }
 
-    protected removeEntityView(engine: GameEngine, entity: Entity): void {
+    protected removeEntityView(engine: GameEngine, entity: Entity): void
+    {
         const {view} = entity.getComponent(ViewComponent);
         if (view.parent) {
             view.parent.removeChild(view);

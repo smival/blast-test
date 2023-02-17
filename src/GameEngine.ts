@@ -21,7 +21,8 @@ import {BoosterCounterUI} from "./ui/BoosterCounterUI";
 import {LevelPtsCounterUI} from "./ui/LevelPtsCounterUI";
 import {LevelStepsCounterUI} from "./ui/LevelStepsCounterUI";
 
-export class GameEngine extends Engine {
+export class GameEngine extends Engine
+{
     public gameMeta: IMeta;
 
     private static _instance: GameEngine;
@@ -32,9 +33,10 @@ export class GameEngine extends Engine {
     private readonly _speed: number = 1;
 
     private _stage: Container;
-    private _pane:Pane;
+    private _pane: Pane;
 
-    public async start(stage: Container): Promise<void> {
+    public async start(stage: Container): Promise<void>
+    {
         this._stage = stage;
 
         const FontFaceObserver = require('fontfaceobserver');
@@ -67,8 +69,8 @@ export class GameEngine extends Engine {
             GameFinishSystem: true
         };
 
-        const paneFolder = this._pane.addFolder({title:"admin", expanded: false})
-            .addFolder({title:"working systems"});
+        const paneFolder = this._pane.addFolder({title: "admin", expanded: false})
+            .addFolder({title: "working systems"});
         paneFolder.addInput(PARAMS, "UISystem")
             .on("change", (ev) => this.onPaneSystemClick(ev));
         paneFolder.addInput(PARAMS, "TileKillerSystem")
@@ -98,7 +100,8 @@ export class GameEngine extends Engine {
         stage.addChild(cont).name = ELayerName.game;
 
         this.addEntity(EntitiesFactory.createGame(this, meta));
-        this._systemsList.forEach(system => {
+        this._systemsList.forEach(system =>
+        {
             if (PARAMS[system.constructor.name])
                 this.addSystem(system)
         });
@@ -118,7 +121,8 @@ export class GameEngine extends Engine {
         this.addEntity(EntitiesFactory.createUICounter(this.addToLayer(fieldBg, ELayerName.gui)));
     }
 
-    protected onPaneSystemClick(e: TpChangeEvent<boolean>):void {
+    protected onPaneSystemClick(e: TpChangeEvent<boolean>): void
+    {
         const system = this._systemsList.filter(sys => sys.constructor.name == e.presetKey).shift();
         if (e.value) {
             this.addSystem(system);
@@ -138,10 +142,13 @@ export class GameEngine extends Engine {
         return this.stage.getChildByName<Container>(layerName);
     }
 
-    protected async loadAssets(): Promise<void> {
-        return new Promise(resolve => {
+    protected async loadAssets(): Promise<void>
+    {
+        return new Promise(resolve =>
+        {
             Loader.shared.add([
-                "red.png", "blue.png", "yellow.png", "meta.json", "green.png", "purple.png"]).load(() => {
+                "red.png", "blue.png", "yellow.png", "meta.json", "green.png", "purple.png"]).load(() =>
+            {
                 resolve();
             });
         });
@@ -176,7 +183,8 @@ export class GameEngine extends Engine {
         }
     }
 
-    public get stage(): Container {
+    public get stage(): Container
+    {
         return this._stage;
     }
 

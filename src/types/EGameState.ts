@@ -1,4 +1,5 @@
-export enum EGameState {
+export enum EGameState
+{
     init,
     playing,
     noSteps,

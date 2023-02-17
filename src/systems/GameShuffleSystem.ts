@@ -8,7 +8,8 @@ import {ETileState} from "../types/ETileState";
 import {ViewComponent} from "../components/ViewComponent";
 
 // has enough points
-export class GameShuffleSystem extends AppSystem {
+export class GameShuffleSystem extends AppSystem
+{
     protected readonly targetState: EGameState = EGameState.noSteps;
     protected tilesFamily?: Family;
     protected level: LevelComponent;
@@ -18,7 +19,9 @@ export class GameShuffleSystem extends AppSystem {
         super();
         this.priority = priority;
     }
-    onAttach(engine: GameEngine) {
+
+    onAttach(engine: GameEngine)
+    {
         super.onAttach(engine);
         this.tilesFamily = new FamilyBuilder(engine)
             .include(TileComponent)
@@ -45,7 +48,8 @@ export class GameShuffleSystem extends AppSystem {
             engine.play();
 
             this.level.incrementShuffle();
-            this.tilesFamily.entities.forEach(tileEntity => {
+            this.tilesFamily.entities.forEach(tileEntity =>
+            {
                 tileEntity.getComponent(ViewComponent).removed = true;
                 this.level.grid.clear();
             });
