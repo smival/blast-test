@@ -1,6 +1,13 @@
+import {EBoosterType} from "./EBoosterType";
+
 export interface IMeta {
     readonly version: number;
+    readonly boosters: BoosterMeta;
     readonly levels: ILevelMeta[];
+}
+
+export type BoosterMeta = {
+    readonly [key in EBoosterType]: number;
 }
 
 export interface LevelProp {

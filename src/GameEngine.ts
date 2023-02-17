@@ -14,11 +14,12 @@ import {ELayerName} from "./components/ViewComponent";
 import {GameFinishSystem} from "./systems/GameFinishSystem";
 import {GameWinSystem} from "./systems/GameWinSystem";
 import {GameShuffleSystem} from "./systems/GameShuffleSystem";
-import {ProgressUI} from "./ui/ProgressUI";
-import {Counter0UI} from "./ui/Counter0UI";
-import {Counter1UI} from "./ui/Counter1UI";
-import {Counter2UI} from "./ui/Counter2UI";
-import {PointsCounterUI} from "./ui/PointsCounterUI";
+import {LevelProgressUI} from "./ui/LevelProgressUI";
+import {LevelCounterUI} from "./ui/LevelCounterUI";
+import {TotalPtsCounterUI} from "./ui/TotalPtsCounterUI";
+import {BoosterCounterUI} from "./ui/BoosterCounterUI";
+import {LevelPtsCounterUI} from "./ui/LevelPtsCounterUI";
+import {LevelStepsCounterUI} from "./ui/LevelStepsCounterUI";
 
 export class GameEngine extends Engine {
     public gameMeta: IMeta;
@@ -96,7 +97,7 @@ export class GameEngine extends Engine {
         stage.addChild(new Container()).name = ELayerName.gui;
         stage.addChild(cont).name = ELayerName.game;
 
-        this.addEntity(EntitiesFactory.createLevel(this, meta.levels[0]));
+        this.addEntity(EntitiesFactory.createGame(this, meta));
         this._systemsList.forEach(system => {
             if (PARAMS[system.constructor.name])
                 this.addSystem(system)
@@ -108,11 +109,12 @@ export class GameEngine extends Engine {
         fieldBg.height = 530;
         fieldBg.position.set(100, 100);
 
-        this.addEntity(EntitiesFactory.createUICounter(this.addToLayer(new ProgressUI(), ELayerName.gui)));
-        this.addEntity(EntitiesFactory.createUICounter(this.addToLayer(new Counter0UI(), ELayerName.gui)));
-        this.addEntity(EntitiesFactory.createUICounter(this.addToLayer(new Counter1UI(), ELayerName.gui)));
-        this.addEntity(EntitiesFactory.createUICounter(this.addToLayer(new Counter2UI(), ELayerName.gui)));
-        this.addEntity(EntitiesFactory.createUICounter(this.addToLayer(new PointsCounterUI(), ELayerName.gui)));
+        this.addEntity(EntitiesFactory.createUICounter(this.addToLayer(new LevelProgressUI(), ELayerName.gui)));
+        this.addEntity(EntitiesFactory.createUICounter(this.addToLayer(new LevelCounterUI(), ELayerName.gui)));
+        this.addEntity(EntitiesFactory.createUICounter(this.addToLayer(new TotalPtsCounterUI(), ELayerName.gui)));
+        this.addEntity(EntitiesFactory.createUICounter(this.addToLayer(new BoosterCounterUI(), ELayerName.gui)));
+        this.addEntity(EntitiesFactory.createUICounter(this.addToLayer(new LevelPtsCounterUI(), ELayerName.gui)));
+        this.addEntity(EntitiesFactory.createUICounter(this.addToLayer(new LevelStepsCounterUI(), ELayerName.gui)));
         this.addEntity(EntitiesFactory.createUICounter(this.addToLayer(fieldBg, ELayerName.gui)));
     }
 

@@ -1,11 +1,11 @@
-import { Component } from "@nova-engine/ecs";
+import {Component} from "@nova-engine/ecs";
 import {Point} from "pixi.js";
 import {Utils} from "../utils/Utils";
 
 export class MoveComponent implements Component {
     private _strategy: IMoveStrategy;
     enabled: boolean = false; // todo remove and use start/end point
-    speed: number = 5;
+    speed: number = 4;
     progress: number = 0;
 
     startPoint: Point;

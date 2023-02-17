@@ -36,7 +36,7 @@ export class TileAnimateSystem extends AppSystem {
             const {view} = tileEntity.getComponent(ViewComponent);
             const tileComp = tileEntity.getComponent(TileComponent);
             tileComp.state = ETileState.animate;
-            moveComp.speed = 5;
+            moveComp.speed = 4;
             moveComp.strategy = new MoveToTargetStrategy();
             moveComp.startPoint = view.position.clone();
             moveComp.endPoint = new Point(

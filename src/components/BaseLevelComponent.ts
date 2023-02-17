@@ -1,12 +1,13 @@
 import {Component} from "@nova-engine/ecs";
 import {EGameState} from "../types/EGameState";
 import {Grid, GridCell} from "../types/Grid";
-import {ILevelMeta} from "../types/IMeta";
+import {BoosterMeta, ILevelMeta} from "../types/IMeta";
 
 export class BaseLevelComponent<CellType extends GridCell> implements Component {
     public grid: Grid<CellType>;
     public gameState: EGameState;
-    public levelMeta:ILevelMeta;
+    public boosters: BoosterMeta;
+    public levelMeta: ILevelMeta;
 
     public get isGameOver(): boolean
     {

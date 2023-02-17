@@ -31,23 +31,27 @@ export class UISystem extends AppSystem {
         this.uiFamily.entities.filter(item => item.getComponent(UIComponent).counter != null)
             .forEach(item => {
             const comp = item.getComponent(UIComponent);
+            const meta = this.level.levelMeta;
             switch (comp.counter.name) {
                 case "levelCounter":
-                    comp.counter.value = 1;
-                    break;
-                case "totalWinCounter":
-
-                    break;
-                case "boosterCounter":
-
+                    //comp.counter.value = this.level.currentLevel;
                     break;
                 case "progressBar":
                     comp.counter.value = Math.min(1,
-                        this.level.levelMeta.winPoints.curValue / this.level.levelMeta.winPoints.maxValue
+                        meta.winPoints.curValue / meta.winPoints.maxValue
                     );
                     break;
+                case "totalWinCounter":
+                    comp.counter.value = Math.round(meta.winPoints.curValue);
+                    break;
+                case "stepsCounter":
+                    comp.counter.value = Math.round(meta.winSteps.maxValue - meta.winSteps.curValue);
+                    break;
                 case "levelPointsCounter":
-
+                    comp.counter.value = meta.winPoints.curValue;
+                    break;
+                case "boosterCounter":
+                    comp.counter.value = this.level.boosters.bomb;
                     break;
             }
         });

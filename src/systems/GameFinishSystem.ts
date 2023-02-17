@@ -41,7 +41,8 @@ export class GameFinishSystem extends AppSystem {
 
         if (this.level.gameState == this.targetState && animationComplete) {
             engine.pause();
-            alert("Game is over!");
+            alert("The Game is over!");
+            //engine.play();
         }
     }
 }

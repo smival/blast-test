@@ -9,7 +9,7 @@ import {Grid} from "./types/Grid";
 import {GameEngine} from "./GameEngine";
 import {ELayerName, ViewComponent} from "./components/ViewComponent";
 import {MoveComponent} from "./components/MoveComponent";
-import {ILevelMeta} from "./types/IMeta";
+import {IMeta} from "./types/IMeta";
 import {EGameState} from "./types/EGameState";
 import {ETileState} from "./types/ETileState";
 import {UIEntity} from "./entity/UIEntity";
@@ -32,13 +32,14 @@ export class EntitiesFactory
         return entity;
     }
 
-    public static createLevel(engine:GameEngine, meta:ILevelMeta): LevelEntity
+    public static createGame(engine:GameEngine, meta:IMeta): LevelEntity
     {
         const entity = new LevelEntity();
         entity.id = this.nextEntityId();
         entity.putComponent(LevelComponent);
         const comp = entity.getComponent(LevelComponent);
-        comp.levelMeta = meta;
+        comp.levelMeta = meta.levels[0];
+        comp.boosters = meta.boosters;
         comp.grid = new Grid<TileComponent>();
         comp.grid.createGrid(comp.levelMeta.size.x, comp.levelMeta.size.y);
         comp.gameState = EGameState.init;
@@ -67,7 +68,6 @@ export class EntitiesFactory
         entity.putComponent(ViewComponent).view = view =
             EntitiesFactory.getTileView(entity.getComponent(TileComponent).type);
         view.interactive = view.interactiveChildren = true;
-        view.scale.set(0.2);
         view.position.set(position.x * view.width, position.y * view.height);
         entity.getComponent(ViewComponent).layerName = ELayerName.game;
         entity.getComponent(ViewComponent).removed = false;

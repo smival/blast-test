@@ -1,8 +1,9 @@
 import {Container, NineSlicePlane, Text, Texture} from "pixi.js";
 import {BaseCounterUI} from "./BaseCounterUI";
 
-export class ProgressUI extends BaseCounterUI {
-    private readonly fullWidth = 470;
+export class LevelProgressUI extends BaseCounterUI {
+    private readonly maxWidth = 470;
+    private readonly minWidth = 25;
     private progressLineView: Container;
 
      constructor()
@@ -47,6 +48,7 @@ export class ProgressUI extends BaseCounterUI {
 
     public set value(value: number)
     {
-        this.progressLineView.width = value * this.fullWidth;
+        const totalWidth = value * this.maxWidth;
+        this.progressLineView.width = totalWidth > 0 && totalWidth<this.minWidth ? this.minWidth : totalWidth;
     }
 }

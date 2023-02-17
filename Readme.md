@@ -7,7 +7,7 @@
 - [x] Check Game over and no steps
 - [x] Check no-steps and make Shuffle
 - [x] Add UI
-- [ ] Update UI
+- [x] Update UI
 
 ### Todos
 - [ ] Booster Bomb

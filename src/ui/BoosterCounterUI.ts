@@ -1,26 +1,28 @@
 import {Sprite, Text, Texture} from "pixi.js";
 import {BaseCounterUI} from "./BaseCounterUI";
 
-export class Counter0UI extends BaseCounterUI {
+export class BoosterCounterUI extends BaseCounterUI {
     private readonly _counter: Text;
 
     constructor()
     {
         super();
 
-        this.name = "levelCounter";
-        this.y = 60;
+        this.name = "boosterCounter";
 
-        const bg = new Sprite(Texture.from('counter_0.png'));
-        this._counter = new Text('99', {
+        this.x = 600;
+        this.y = 400;
+
+        const bonus = new Sprite(Texture.from('booster.png'));
+        this._counter = new Text('9', {
             fontFamily: 'Marvin',
             fontSize: 24,
             fill: 0xFFFFFF,
             align: 'center'
         });
-        this._counter.position.set(40, 0);
+        this._counter.position.set(30, 65);
 
-        this.addChild(bg);
+        this.addChild(bonus);
         this.addChild(this._counter);
     }
 
@@ -28,6 +30,4 @@ export class Counter0UI extends BaseCounterUI {
     {
         this._counter.text = value.toString();
     }
-
-
 }
