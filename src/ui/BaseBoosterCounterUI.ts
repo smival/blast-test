@@ -1,18 +1,13 @@
 import {Sprite, Text, Texture} from "pixi.js";
 import {BaseCounterUI} from "./BaseCounterUI";
 
-export class BoosterCounterUI extends BaseCounterUI
+export class BaseBoosterCounterUI extends BaseCounterUI
 {
     private readonly _counter: Text;
 
     constructor()
     {
         super();
-
-        this.name = "boosterCounter";
-
-        this.x = 600;
-        this.y = 400;
 
         const bonus = new Sprite(Texture.from('booster.png'));
         this._counter = new Text('9', {

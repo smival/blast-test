@@ -1,9 +1,9 @@
 {
   "version": 0,
   "boosters": {
-    "bomb": 1,
-    "teleport": 2,
-    "superTile": 3
+    "bomb": {"maxValue":1},
+    "teleport": {"maxValue":2},
+    "superTile": {"maxValue":3}
   },
   "levels": [
     {

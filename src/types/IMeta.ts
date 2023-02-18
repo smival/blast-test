@@ -7,8 +7,12 @@ export interface IMeta
     readonly levels: ILevelMeta[];
 }
 
+export interface PayloadBooster {
+    type: EBoosterType;
+}
+
 export type BoosterMeta = {
-    readonly [key in EBoosterType]: number;
+    readonly [key in EBoosterType]: LevelProp;
 }
 
 export interface LevelProp

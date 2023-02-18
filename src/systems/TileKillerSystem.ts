@@ -6,6 +6,7 @@ import {UIComponent} from "../components/UIComponent";
 import {LevelComponent} from "../components/LevelComponent";
 import {ViewComponent} from "../components/ViewComponent";
 import {ETileState} from "../types/ETileState";
+import {TileUtils} from "../utils/TileUtils";
 
 export class TileKillerSystem extends AppSystem
 {
@@ -23,6 +24,7 @@ export class TileKillerSystem extends AppSystem
         super.onAttach(engine);
         this.tilesFamily = new FamilyBuilder(engine)
             .include(TileComponent)
+            .include(UIComponent)
             .build();
         this.levelFamily = new FamilyBuilder(engine)
             .include(LevelComponent)
@@ -32,10 +34,9 @@ export class TileKillerSystem extends AppSystem
     public update(engine: GameEngine, delta: number): void
     {
         let blastTilesComps: TileComponent[] = [];
-        let movedTilesComps: TileComponent[] = [];
         let hasBlast = false;
 
-        let level;
+        let level: LevelComponent;
         this.levelFamily.entities.forEach(entity => {
             level = entity.getComponent(LevelComponent);
         });
@@ -60,36 +61,18 @@ export class TileKillerSystem extends AppSystem
                 // blast
                 if (blastTilesComps.length >= level.levelMeta.blastSize) {
                     hasBlast = true;
-                    const affectedCols = [];
-                    blastTilesComps.forEach(tileComp =>
-                    {
-                        level.grid.killCell(tileComp.gridPosition);
-                        if (affectedCols.indexOf(tileComp.gridPosition.x) == -1) {
-                            affectedCols.push(tileComp.gridPosition.x);
-                        }
-                    })
-                    // move old tiles
-                    affectedCols.forEach(col =>
-                    {
-                        movedTilesComps = movedTilesComps.concat(level.grid.dropCellsToFreePositions(col));
-                    });
+                    TileUtils.blastTiles(blastTilesComps, level.grid);
                 }
             });
 
         if (hasBlast) {
-            level.incrementStep(blastTilesComps.length);
-            // remove
+            level.incrementPoints(blastTilesComps.length);
+            level.incrementStep();
             this.tilesFamily.entities.forEach(tileEntity =>
             {
+                // remove view
                 if (blastTilesComps.indexOf(tileEntity.getComponent(TileComponent)) != -1) {
                     tileEntity.getComponent(ViewComponent).removed = true;
-                }
-            });
-            // falling
-            this.tilesFamily.entities.forEach(tileEntity =>
-            {
-                if (movedTilesComps.indexOf(tileEntity.getComponent(TileComponent)) != -1) {
-                    tileEntity.getComponent(TileComponent).state = ETileState.falling
                 }
             });
         }

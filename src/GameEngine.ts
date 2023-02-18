@@ -1,6 +1,6 @@
 import {Container, filters, Loader, NineSlicePlane, Texture, Ticker, TickerCallback} from "pixi.js";
 import {Engine} from "@nova-engine/ecs";
-import {IMeta} from "./types/IMeta";
+import {IMeta, PayloadBooster} from "./types/IMeta";
 import {System} from "@nova-engine/ecs/lib/System";
 import {Pane, TpChangeEvent} from "tweakpane";
 import {Utils} from "./utils/Utils";
@@ -16,7 +16,6 @@ import {GameShuffleSystem} from "./systems/GameShuffleSystem";
 import {LevelProgressUI} from "./ui/LevelProgressUI";
 import {LevelCounterUI} from "./ui/LevelCounterUI";
 import {TotalPtsCounterUI} from "./ui/TotalPtsCounterUI";
-import {BoosterCounterUI} from "./ui/BoosterCounterUI";
 import {LevelPtsCounterUI} from "./ui/LevelPtsCounterUI";
 import {LevelStepsCounterUI} from "./ui/LevelStepsCounterUI";
 import {GamePauseData} from "./ui/GamePauseData";
@@ -24,6 +23,10 @@ import {EGameState} from "./types/EGameState";
 import {GameRestartSystem} from "./systems/GameRestartSystem";
 import {GameOverSystem} from "./systems/GameOverSystem";
 import {CleanSystem} from "./systems/CleanSystem";
+import {BoosterSystem} from "./systems/BoosterSystem";
+import {EBoosterType} from "./types/EBoosterType";
+import {BombBoosterCounterUI} from "./ui/BombBoosterCounterUI";
+import {TeleportBoosterCounterUI} from "./ui/TeleportBoosterCounterUI";
 
 export class GameEngine extends Engine
 {
@@ -57,9 +60,10 @@ export class GameEngine extends Engine
         this._systemsList = [
             new GameRestartSystem(0),
             new UISystem(1),
-            new TileKillerSystem(100),
-            new TileSpawnerSystem(101),
-            new TileAnimateSystem(102),
+            new BoosterSystem(100),
+            new TileKillerSystem(101),
+            new TileSpawnerSystem(102),
+            new TileAnimateSystem(103),
             new ViewSystem(200),
             new GameShuffleSystem(201),
             new GameWinSystem(202),
@@ -71,6 +75,7 @@ export class GameEngine extends Engine
         const PARAMS = {
             GameRestartSystem: true,
             UISystem: true,
+            BoosterSystem: true,
             TileKillerSystem: true,
             TileSpawnerSystem: true,
             TileAnimateSystem: true,
@@ -86,6 +91,8 @@ export class GameEngine extends Engine
         paneFolder.addInput(PARAMS, "GameRestartSystem")
             .on("change", (ev) => this.onPaneSystemClick(ev));
         paneFolder.addInput(PARAMS, "UISystem")
+            .on("change", (ev) => this.onPaneSystemClick(ev));
+        paneFolder.addInput(PARAMS, "BoosterSystem")
             .on("change", (ev) => this.onPaneSystemClick(ev));
         paneFolder.addInput(PARAMS, "TileKillerSystem")
             .on("change", (ev) => this.onPaneSystemClick(ev));
@@ -130,10 +137,12 @@ export class GameEngine extends Engine
         this.addEntity(EntitiesFactory.createUICounter(this.addToLayer(new LevelProgressUI(), ELayerName.gui)));
         this.addEntity(EntitiesFactory.createUICounter(this.addToLayer(new LevelCounterUI(), ELayerName.gui)));
         this.addEntity(EntitiesFactory.createUICounter(this.addToLayer(new TotalPtsCounterUI(), ELayerName.gui)));
-        this.addEntity(EntitiesFactory.createUICounter(this.addToLayer(new BoosterCounterUI(), ELayerName.gui)));
         this.addEntity(EntitiesFactory.createUICounter(this.addToLayer(new LevelPtsCounterUI(), ELayerName.gui)));
         this.addEntity(EntitiesFactory.createUICounter(this.addToLayer(new LevelStepsCounterUI(), ELayerName.gui)));
         this.addEntity(EntitiesFactory.createUICounter(this.addToLayer(fieldBg, ELayerName.gui)));
+
+        this.addEntity(EntitiesFactory.createUICounter<PayloadBooster>(this.addToLayer(new BombBoosterCounterUI(), ELayerName.gui), true, {type:EBoosterType.bomb}));
+        this.addEntity(EntitiesFactory.createUICounter<PayloadBooster>(this.addToLayer(new TeleportBoosterCounterUI(), ELayerName.gui), true, {type:EBoosterType.teleport}));
     }
 
     protected onPaneSystemClick(e: TpChangeEvent<boolean>): void

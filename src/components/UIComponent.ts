@@ -2,9 +2,11 @@ import {Component} from "@nova-engine/ecs";
 import {Container} from "pixi.js";
 import {BaseCounterUI} from "../ui/BaseCounterUI";
 
-export class UIComponent implements Component
+export class UIComponent<T = null> implements Component
 {
     public counter: BaseCounterUI;
+    public payload: T;
+
     private _ui: Container;
     private _triggered: boolean = false;
 

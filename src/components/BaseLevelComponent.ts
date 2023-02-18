@@ -43,9 +43,13 @@ export class BaseLevelComponent<CellType extends GridCell> implements Component
         this.levelMeta.shuffle.curValue++;
     }
 
-    public incrementStep(tilesCount: number): void
+    public incrementPoints(tilesCount: number): void
     {
         this.levelMeta.winPoints.curValue += tilesCount * 10;
+    }
+
+    public incrementStep(): void
+    {
         this.levelMeta.winSteps.curValue++;
     }
 }

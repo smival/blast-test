@@ -20,6 +20,16 @@ export class Grid<T extends GridCell>
         return this._grid;
     }
 
+    public getTilesInRadius(position: Point, radius: number): T[]
+    {
+        return this.getNotEmptyCells()
+            .filter(cell => cell.gridPosition.x >= position.x - radius
+                        && cell.gridPosition.x <= position.x + radius
+                        && cell.gridPosition.y >= position.y - radius
+                        && cell.gridPosition.y <= position.y + radius
+            );
+    }
+
     public getCellGroupByPoint(position: Point, compareProps: Partial<T>): T[]
     {
         const list: T[] = [];

@@ -9,9 +9,9 @@
 - [x] Add UI
 - [x] Update UI
 - [x] Switch levels and parse its meta
+- [x] Booster Bomb
 
 ### Todos
-- [ ] Booster Bomb
 - [ ] Booster Teleport
 - [ ] Booster SuperTile
 

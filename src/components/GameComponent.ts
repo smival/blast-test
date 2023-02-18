@@ -16,6 +16,11 @@ export class GameComponent implements Component
 
     public getBoosterCount(name:EBoosterType): number
     {
-        return this.boosters[name] || 0;
+        return this.boosters[name].maxValue - this.boosters[name].curValue;
+    }
+
+    public useBooster(name:EBoosterType)
+    {
+        this.boosters[name].curValue++;
     }
 }

@@ -25,11 +25,21 @@ export class EntitiesFactory
         return ++EntitiesFactory._nextEntityId;
     }
 
-    public static createUICounter(view: Container): UIEntity
+    public static createUICounter<PayloadType>(
+        view: Container,
+        clickable: boolean = false,
+        payload:PayloadType = null): UIEntity
     {
         const entity = new UIEntity();
         entity.id = this.nextEntityId();
         entity.putComponent(UIComponent).counter = view as BaseCounterUI;
+        if (clickable) {
+            view.interactive = view.interactiveChildren = true;
+            entity.getComponent(UIComponent).ui = view;
+        }
+        if (payload) {
+            entity.getComponent(UIComponent).payload = payload;
+        }
 
         return entity;
     }
@@ -62,6 +72,9 @@ export class EntitiesFactory
         comp.maxLevel = meta.levels.length-1;
         comp.totalPoints = 0;
         comp.boosters = meta.boosters;
+        for (let compKey in comp.boosters) {
+            comp.boosters[compKey].curValue = 0;
+        }
 
         return entity;
     }
