@@ -8,13 +8,12 @@
 - [x] Check no-steps and make Shuffle
 - [x] Add UI
 - [x] Update UI
+- [x] Switch levels and parse its meta
 
 ### Todos
 - [ ] Booster Bomb
 - [ ] Booster Teleport
 - [ ] Booster SuperTile
-- [ ] Define game states
-- [ ] Switch levels and parse its meta
 
 ### May be
 - [ ] Blast/Fall Sound

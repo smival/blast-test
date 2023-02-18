@@ -6,8 +6,8 @@ import {LevelComponent} from "../components/LevelComponent";
 
 export class UISystem extends AppSystem
 {
-    protected uiFamily?: Family;
-    protected level: LevelComponent;
+    protected uiFamily: Family;
+    protected levelFamily:Family;
 
     constructor(priority: number)
     {
@@ -21,20 +21,23 @@ export class UISystem extends AppSystem
         this.uiFamily = new FamilyBuilder(engine)
             .include(UIComponent)
             .build();
-        const levelFamily = new FamilyBuilder(engine)
+        this.levelFamily = new FamilyBuilder(engine)
             .include(LevelComponent)
             .build();
-        this.level = levelFamily.entities[0].getComponent(LevelComponent);
     }
 
     public update(engine: GameEngine, delta: number): void
     {
-        // todo separate buttons and counters, buttons should be cleaned
+        let meta;
+        this.levelFamily.entities.forEach(level => {
+            meta = level.getComponent(LevelComponent).levelMeta;
+        });
+        if (!meta) return;
+
         this.uiFamily.entities.filter(item => item.getComponent(UIComponent).counter != null)
             .forEach(item =>
             {
                 const comp = item.getComponent(UIComponent);
-                const meta = this.level.levelMeta;
                 switch (comp.counter.name) {
                     case "levelCounter":
                         //comp.counter.value = this.level.currentLevel;
@@ -54,7 +57,7 @@ export class UISystem extends AppSystem
                         comp.counter.value = meta.winPoints.curValue;
                         break;
                     case "boosterCounter":
-                        comp.counter.value = this.level.boosters.bomb;
+                        //comp.counter.value = this.level.boosters.bomb;
                         break;
                 }
             });

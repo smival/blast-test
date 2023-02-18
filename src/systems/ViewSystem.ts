@@ -4,13 +4,11 @@ import {ViewComponent} from "../components/ViewComponent";
 import {AppSystem} from "./AppSystem";
 import {TileComponent} from "../components/TileComponent";
 import {TileEntity} from "../entity/TileEntity";
-import {LevelComponent} from "../components/LevelComponent";
 import {ETileState} from "../types/ETileState";
 
 export class ViewSystem extends AppSystem
 {
-    protected family?: Family;
-    protected level: LevelComponent;
+    protected viewsFamily?: Family;
 
     constructor(priority: number)
     {
@@ -21,18 +19,14 @@ export class ViewSystem extends AppSystem
     onAttach(engine: GameEngine)
     {
         super.onAttach(engine);
-        this.family = new FamilyBuilder(engine)
+        this.viewsFamily = new FamilyBuilder(engine)
             .include(ViewComponent)
             .build();
-        const levelFamily = new FamilyBuilder(engine)
-            .include(LevelComponent)
-            .build();
-        this.level = levelFamily.entities[0].getComponent(LevelComponent);
     }
 
     public onDetach(engine: GameEngine)
     {
-        this.family.entities.forEach(entity =>
+        this.viewsFamily.entities.forEach(entity =>
         {
             this.removeEntityView(engine, entity);
         });
@@ -57,7 +51,7 @@ export class ViewSystem extends AppSystem
 
     public update(engine: GameEngine, delta: number): void
     {
-        this.family.entities.forEach(entity =>
+        this.viewsFamily.entities.forEach(entity =>
         {
             const {view} = entity.getComponent(ViewComponent);
             if (!view.parent) {

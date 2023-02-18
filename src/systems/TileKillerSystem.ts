@@ -10,7 +10,7 @@ import {ETileState} from "../types/ETileState";
 export class TileKillerSystem extends AppSystem
 {
     protected tilesFamily?: Family;
-    protected level: LevelComponent;
+    protected levelFamily:Family;
 
     constructor(priority: number)
     {
@@ -24,10 +24,9 @@ export class TileKillerSystem extends AppSystem
         this.tilesFamily = new FamilyBuilder(engine)
             .include(TileComponent)
             .build();
-        const levelFamily = new FamilyBuilder(engine)
+        this.levelFamily = new FamilyBuilder(engine)
             .include(LevelComponent)
             .build();
-        this.level = levelFamily.entities[0].getComponent(LevelComponent);
     }
 
     public update(engine: GameEngine, delta: number): void
@@ -35,6 +34,12 @@ export class TileKillerSystem extends AppSystem
         let blastTilesComps: TileComponent[] = [];
         let movedTilesComps: TileComponent[] = [];
         let hasBlast = false;
+
+        let level;
+        this.levelFamily.entities.forEach(entity => {
+            level = entity.getComponent(LevelComponent);
+        });
+        if (!level) return;
 
         this.tilesFamily.entities.filter(
             tileEntity => tileEntity.getComponent(UIComponent).triggered
@@ -45,7 +50,7 @@ export class TileKillerSystem extends AppSystem
                 triggeredTileEntity.getComponent(UIComponent).cleanTriggered();
                 // check blast
                 blastTilesComps = blastTilesComps.concat(
-                    this.level.grid.getCellGroupByPoint(
+                    level.grid.getCellGroupByPoint(
                         triggeredTileEntity.getComponent(TileComponent).gridPosition,
                         {
                             type: triggeredTileEntity.getComponent(TileComponent).type,
@@ -53,12 +58,12 @@ export class TileKillerSystem extends AppSystem
                         }
                     ));
                 // blast
-                if (blastTilesComps.length >= this.level.levelMeta.blastSize) {
+                if (blastTilesComps.length >= level.levelMeta.blastSize) {
                     hasBlast = true;
                     const affectedCols = [];
                     blastTilesComps.forEach(tileComp =>
                     {
-                        this.level.grid.killCell(tileComp.gridPosition);
+                        level.grid.killCell(tileComp.gridPosition);
                         if (affectedCols.indexOf(tileComp.gridPosition.x) == -1) {
                             affectedCols.push(tileComp.gridPosition.x);
                         }
@@ -66,13 +71,13 @@ export class TileKillerSystem extends AppSystem
                     // move old tiles
                     affectedCols.forEach(col =>
                     {
-                        movedTilesComps = movedTilesComps.concat(this.level.grid.dropCellsToFreePositions(col));
+                        movedTilesComps = movedTilesComps.concat(level.grid.dropCellsToFreePositions(col));
                     });
                 }
             });
 
         if (hasBlast) {
-            this.level.incrementStep(blastTilesComps.length);
+            level.incrementStep(blastTilesComps.length);
             // remove
             this.tilesFamily.entities.forEach(tileEntity =>
             {

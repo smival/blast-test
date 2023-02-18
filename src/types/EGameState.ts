@@ -1,8 +1,9 @@
 export enum EGameState
 {
-    init,
-    playing,
-    noSteps,
-    lose,
-    win
+    init = "init",
+    playing = "playing",
+    shuffle = "shuffle",
+    lose = "lose",
+    win = "win",
+    restart = "restart"
 }

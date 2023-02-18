@@ -5,14 +5,15 @@ import {TileComponent} from "../components/TileComponent";
 import {EGameState} from "../types/EGameState";
 import {LevelComponent} from "../components/LevelComponent";
 import {ETileState} from "../types/ETileState";
+import {EPauseReason} from "../types/EPauseReason";
 
 // game over = no tiles to blast and its last Shuffle
 // game over = not enough points for X steps
-export class GameFinishSystem extends AppSystem
+export class GameOverSystem extends AppSystem
 {
     protected readonly targetState: EGameState = EGameState.lose;
     protected tilesFamily?: Family;
-    protected level: LevelComponent;
+    protected levelFamily:Family;
 
     constructor(priority: number)
     {
@@ -26,26 +27,32 @@ export class GameFinishSystem extends AppSystem
         this.tilesFamily = new FamilyBuilder(engine)
             .include(TileComponent)
             .build();
-        const levelFamily = new FamilyBuilder(engine)
+        this.levelFamily = new FamilyBuilder(engine)
             .include(LevelComponent)
             .build();
-        this.level = levelFamily.entities[0].getComponent(LevelComponent);
     }
 
     public update(engine: GameEngine, delta: number): void
     {
-        if (this.level.isGameOver) {
-            this.level.gameState = this.targetState;
+        let level;
+        this.levelFamily.entities.forEach(entity => {
+            level = entity.getComponent(LevelComponent);
+        });
+        if (!level) return;
+
+        // wait all tiles before dialog
+        if (engine.gameState == this.targetState && this.checkAnimationsCompleted()) {
+            engine.pause({reason:EPauseReason.lose, popupTitle: "The Game is over! Start from scratch."});
         }
 
-        // wait all tiles
-        const animationComplete = this.tilesFamily.entities
+        if (level.isGameOver(engine) && engine.gameState == EGameState.playing) {
+            engine.gameState = this.targetState;
+        }
+    }
+
+    protected checkAnimationsCompleted(): boolean
+    {
+        return this.tilesFamily.entities
             .every(tileEntity => tileEntity.getComponent(TileComponent).state === ETileState.playable);
-
-        if (this.level.gameState == this.targetState && animationComplete) {
-            engine.pause();
-            alert("The Game is over!");
-            //engine.play();
-        }
     }
 }

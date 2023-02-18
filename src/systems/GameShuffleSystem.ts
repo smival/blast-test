@@ -5,14 +5,14 @@ import {TileComponent} from "../components/TileComponent";
 import {EGameState} from "../types/EGameState";
 import {LevelComponent} from "../components/LevelComponent";
 import {ETileState} from "../types/ETileState";
-import {ViewComponent} from "../components/ViewComponent";
+import {EPauseReason} from "../types/EPauseReason";
 
 // has enough points
 export class GameShuffleSystem extends AppSystem
 {
-    protected readonly targetState: EGameState = EGameState.noSteps;
+    protected readonly targetState: EGameState = EGameState.shuffle;
     protected tilesFamily?: Family;
-    protected level: LevelComponent;
+    protected levelFamily:Family;
 
     constructor(priority: number)
     {
@@ -26,34 +26,47 @@ export class GameShuffleSystem extends AppSystem
         this.tilesFamily = new FamilyBuilder(engine)
             .include(TileComponent)
             .build();
-        const levelFamily = new FamilyBuilder(engine)
+        this.levelFamily = new FamilyBuilder(engine)
             .include(LevelComponent)
             .build();
-        this.level = levelFamily.entities[0].getComponent(LevelComponent);
     }
 
     public update(engine: GameEngine, delta: number): void
     {
-        // wait all tiles
-        const animationComplete = this.tilesFamily.entities
-            .every(tileEntity => tileEntity.getComponent(TileComponent).state === ETileState.playable);
+        let level;
+        this.levelFamily.entities.forEach(entity => {
+            level = entity.getComponent(LevelComponent);
+        });
+        if (!level) return;
 
-        if (animationComplete && !this.level.hasSteps && this.level.hasShuffle) {
-            this.level.gameState = this.targetState;
-        }
+        if (engine.gameState == this.targetState && this.checkAnimationsCompleted()) {
+            engine.pause({
+                reason:EPauseReason.shuffle,
+                popupTitle:`No any steps! Shuffle left: ${level.shufflesLeft}`
+            });
 
-        if (this.level.gameState == this.targetState && animationComplete) {
-            engine.pause();
-            alert(`No any steps! Shuffle left: ${this.level.shufflesLeft}`);
-            engine.play();
 
+/*
             this.level.incrementShuffle();
             this.tilesFamily.entities.forEach(tileEntity =>
             {
                 tileEntity.getComponent(ViewComponent).removed = true;
                 this.level.grid.clear();
             });
-            this.level.gameState = EGameState.init;
+            engine.gameState = EGameState.init;
+
+ */
         }
+
+        if (!level.hasSteps && level.hasShuffle && engine.gameState == EGameState.playing
+        && this.checkAnimationsCompleted()) {
+            engine.gameState = this.targetState;
+        }
+    }
+
+    protected checkAnimationsCompleted(): boolean
+    {
+        return this.tilesFamily.entities
+            .every(tileEntity => tileEntity.getComponent(TileComponent).state === ETileState.playable);
     }
 }

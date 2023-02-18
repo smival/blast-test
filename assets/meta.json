@@ -12,7 +12,7 @@
       },
       "blastSize": 2,
       "shuffle": {
-        "maxValue": 3
+        "maxValue": 1
       },
       "winPoints": {
         "maxValue": 300
@@ -27,13 +27,13 @@
       },
       "blastSize": 3,
       "shuffle": {
-        "maxValue": 3
+        "maxValue": 2
       },
       "winPoints": {
-        "maxValue": 300
+        "maxValue": 400
       },
       "winSteps": {
-        "maxValue": 7
+        "maxValue": 6
       }
     },
     {
@@ -45,10 +45,10 @@
         "maxValue": 3
       },
       "winPoints": {
-        "maxValue": 300
+        "maxValue": 500
       },
       "winSteps": {
-        "maxValue": 7
+        "maxValue": 5
       }
     }
   ]

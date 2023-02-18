@@ -9,11 +9,12 @@ import {Grid} from "./types/Grid";
 import {GameEngine} from "./GameEngine";
 import {ELayerName, ViewComponent} from "./components/ViewComponent";
 import {MoveComponent} from "./components/MoveComponent";
-import {IMeta} from "./types/IMeta";
-import {EGameState} from "./types/EGameState";
+import {ILevelMeta, IMeta} from "./types/IMeta";
 import {ETileState} from "./types/ETileState";
 import {UIEntity} from "./entity/UIEntity";
 import {BaseCounterUI} from "./ui/BaseCounterUI";
+import {GameEntity} from "./entity/GameEntity";
+import {GameComponent} from "./components/GameComponent";
 
 export class EntitiesFactory
 {
@@ -33,21 +34,34 @@ export class EntitiesFactory
         return entity;
     }
 
-    public static createGame(engine: GameEngine, meta: IMeta): LevelEntity
+    public static createLevel(engine: GameEngine, lavelMeta:ILevelMeta): LevelEntity
     {
         const entity = new LevelEntity();
         entity.id = this.nextEntityId();
+
         entity.putComponent(LevelComponent);
         const comp = entity.getComponent(LevelComponent);
-        comp.levelMeta = meta.levels[0];
-        comp.boosters = meta.boosters;
+        comp.levelMeta = lavelMeta;
         comp.grid = new Grid<TileComponent>();
         comp.grid.createGrid(comp.levelMeta.size.x, comp.levelMeta.size.y);
-        comp.gameState = EGameState.init;
 
         comp.levelMeta.shuffle.curValue = 0;
         comp.levelMeta.winSteps.curValue = 0;
         comp.levelMeta.winPoints.curValue = 0;
+
+        return entity;
+    }
+
+    public static createGame(engine: GameEngine, meta: IMeta): GameEntity
+    {
+        const entity = new GameEntity();
+        entity.id = this.nextEntityId();
+
+        const comp = entity.putComponent(GameComponent);
+        comp.currentLevel = 0;
+        comp.maxLevel = meta.levels.length-1;
+        comp.totalPoints = 0;
+        comp.boosters = meta.boosters;
 
         return entity;
     }

@@ -9,7 +9,7 @@ import {LevelComponent} from "../components/LevelComponent";
 export class TileSpawnerSystem extends AppSystem
 {
     protected tilesFamily?: Family;
-    protected level: LevelComponent;
+    protected levelFamily:Family;
 
     constructor(priority: number)
     {
@@ -23,32 +23,35 @@ export class TileSpawnerSystem extends AppSystem
         this.tilesFamily = new FamilyBuilder(engine)
             .include(TileComponent)
             .build();
-        const levelFamily = new FamilyBuilder(engine)
+        this.levelFamily = new FamilyBuilder(engine)
             .include(LevelComponent)
             .build();
-        this.level = levelFamily.entities[0].getComponent(LevelComponent);
     }
 
     // detect new fields available
     // spawn new Tiles to fill those free fields
     public update(engine: GameEngine, delta: number): void
     {
-        this.level.grid.getEmptyCells().forEach(newPosition =>
-        {
-            //console.log("new ", newPosition.x, newPosition.y);
+        let level;
+        this.levelFamily.entities.forEach(entity => {
+            level = entity.getComponent(LevelComponent);
+        });
+        if (!level) return;
 
+        level.grid.getEmptyCells().forEach(newPosition =>
+        {
             const newTile = EntitiesFactory.createTile(
                 newPosition,
-                this.level.gameState == EGameState.init ? 20 : 0
+                engine.gameState == EGameState.init ? 20 : 0
             );
             engine.addEntity(newTile);
-            this.level.grid.putCell(
+            level.grid.putCell(
                 newPosition, newTile.getComponent(TileComponent)
             );
         });
 
-        if (this.level.gameState == EGameState.init) {
-            this.level.gameState = EGameState.playing;
+        if (engine.gameState == EGameState.init) {
+            engine.gameState = EGameState.playing;
         }
     }
 }

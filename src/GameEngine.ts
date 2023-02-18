@@ -1,4 +1,4 @@
-import {Container, filters, Loader, NineSlicePlane, Texture, Ticker} from "pixi.js";
+import {Container, filters, Loader, NineSlicePlane, Texture, Ticker, TickerCallback} from "pixi.js";
 import {Engine} from "@nova-engine/ecs";
 import {IMeta} from "./types/IMeta";
 import {System} from "@nova-engine/ecs/lib/System";
@@ -11,7 +11,6 @@ import {UISystem} from "./systems/UISystem";
 import {EntitiesFactory} from "./EntitiesFactory";
 import {ViewSystem} from "./systems/ViewSystem";
 import {ELayerName} from "./components/ViewComponent";
-import {GameFinishSystem} from "./systems/GameFinishSystem";
 import {GameWinSystem} from "./systems/GameWinSystem";
 import {GameShuffleSystem} from "./systems/GameShuffleSystem";
 import {LevelProgressUI} from "./ui/LevelProgressUI";
@@ -20,6 +19,11 @@ import {TotalPtsCounterUI} from "./ui/TotalPtsCounterUI";
 import {BoosterCounterUI} from "./ui/BoosterCounterUI";
 import {LevelPtsCounterUI} from "./ui/LevelPtsCounterUI";
 import {LevelStepsCounterUI} from "./ui/LevelStepsCounterUI";
+import {GamePauseData} from "./ui/GamePauseData";
+import {EGameState} from "./types/EGameState";
+import {GameRestartSystem} from "./systems/GameRestartSystem";
+import {GameOverSystem} from "./systems/GameOverSystem";
+import {CleanSystem} from "./systems/CleanSystem";
 
 export class GameEngine extends Engine
 {
@@ -27,10 +31,13 @@ export class GameEngine extends Engine
 
     private static _instance: GameEngine;
     private _systemsList: System[] = [];
+    private _gameState: EGameState = EGameState.restart;
 
     private _time = 0;
     private _pause: boolean = false;
+    private _pauseData: GamePauseData;
     private readonly _speed: number = 1;
+    private readonly _tickCallback: TickerCallback<any> = (dt) => this.update(dt)
 
     private _stage: Container;
     private _pane: Pane;
@@ -48,6 +55,7 @@ export class GameEngine extends Engine
         this.gameMeta = meta;
 
         this._systemsList = [
+            new GameRestartSystem(0),
             new UISystem(1),
             new TileKillerSystem(100),
             new TileSpawnerSystem(101),
@@ -55,10 +63,13 @@ export class GameEngine extends Engine
             new ViewSystem(200),
             new GameShuffleSystem(201),
             new GameWinSystem(202),
-            new GameFinishSystem(203)
+            new GameOverSystem(203),
+            new CleanSystem(204)
+
         ];
         this._pane = new Pane();
         const PARAMS = {
+            GameRestartSystem: true,
             UISystem: true,
             TileKillerSystem: true,
             TileSpawnerSystem: true,
@@ -66,11 +77,14 @@ export class GameEngine extends Engine
             ViewSystem: true,
             GameShuffleSystem: true,
             GameWinSystem: true,
-            GameFinishSystem: true
+            GameOverSystem: true,
+            CleanSystem: true
         };
 
         const paneFolder = this._pane.addFolder({title: "admin", expanded: false})
             .addFolder({title: "working systems"});
+        paneFolder.addInput(PARAMS, "GameRestartSystem")
+            .on("change", (ev) => this.onPaneSystemClick(ev));
         paneFolder.addInput(PARAMS, "UISystem")
             .on("change", (ev) => this.onPaneSystemClick(ev));
         paneFolder.addInput(PARAMS, "TileKillerSystem")
@@ -85,12 +99,14 @@ export class GameEngine extends Engine
             .on("change", (ev) => this.onPaneSystemClick(ev));
         paneFolder.addInput(PARAMS, "GameWinSystem")
             .on("change", (ev) => this.onPaneSystemClick(ev));
-        paneFolder.addInput(PARAMS, "GameFinishSystem")
+        paneFolder.addInput(PARAMS, "GameOverSystem")
+            .on("change", (ev) => this.onPaneSystemClick(ev));
+        paneFolder.addInput(PARAMS, "CleanSystem")
             .on("change", (ev) => this.onPaneSystemClick(ev));
 
         Ticker.shared.maxFPS = 60;
         Ticker.shared.minFPS = 10;
-        Ticker.shared.add((dt) => this.update(dt));
+        Ticker.shared.add(this._tickCallback);
 
         const cont = stage.addChild(new Container());
         cont.position.set(130, 130);
@@ -99,7 +115,6 @@ export class GameEngine extends Engine
         stage.addChild(new Container()).name = ELayerName.gui;
         stage.addChild(cont).name = ELayerName.game;
 
-        this.addEntity(EntitiesFactory.createGame(this, meta));
         this._systemsList.forEach(system =>
         {
             if (PARAMS[system.constructor.name])
@@ -166,8 +181,16 @@ export class GameEngine extends Engine
     public update(delta: number): void
     {
         if (this._pause) {
+            Ticker.shared.remove(this._tickCallback);
+            window.requestAnimationFrame(() => {
+                alert(this.pauseData.popupTitle);
+                this._gameState = EGameState.restart;
+                this.play();
+                Ticker.shared.add(this._tickCallback);
+            });
             return;
         }
+
         const frameTime = 1 / Ticker.shared.maxFPS;
         this._time += (Ticker.shared.deltaMS / 1000) * this._speed;
         let count = Math.min(
@@ -188,9 +211,10 @@ export class GameEngine extends Engine
         return this._stage;
     }
 
-    public pause(): void
+    public pause(data: GamePauseData): void
     {
         this._pause = true;
+        this._pauseData = data;
         this.getLayer(ELayerName.game).interactiveChildren = false;
         const colorMatrix = new filters.ColorMatrixFilter();
         this.getLayer(ELayerName.game).filters = [colorMatrix];
@@ -202,6 +226,22 @@ export class GameEngine extends Engine
         this._pause = false;
         this.getLayer(ELayerName.game).interactiveChildren = true;
         this.getLayer(ELayerName.game).filters = [];
+    }
+
+    public get pauseData(): GamePauseData
+    {
+        return this._pauseData;
+    }
+
+    public get gameState(): EGameState
+    {
+        return this._gameState;
+    }
+
+    public set gameState(value: EGameState)
+    {
+        console.log(`change state "${this._gameState}" => "${value}"`);
+        this._gameState = value;
     }
 }
 
