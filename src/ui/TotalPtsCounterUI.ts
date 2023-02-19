@@ -15,7 +15,7 @@ export class TotalPtsCounterUI extends BaseCounterUI
         this.y = 30;
 
         const counter1 = new Sprite(Texture.from('counter_1.png'));
-        this._counter = new Text('9999', {
+        this._counter = new Text('-', {
             fontFamily: 'Marvin',
             fontSize: 24,
             fill: 0xFFFFFF,

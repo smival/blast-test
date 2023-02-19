@@ -22,13 +22,14 @@ export class LevelPtsCounterUI extends BaseCounterUI
             align: 'center'
         });
         textCounter22.position.set(110, 155);
-        this._counter = new Text('999', {
+        this._counter = new Text('-', {
             fontFamily: 'Marvin',
             fontSize: 33,
             fill: 0xFFFFFF,
             align: 'center'
         });
-        this._counter.position.set(100, 170);
+        this._counter.anchor.set(0.5, 0);
+        this._counter.position.set(130, 170);
 
         this.addChild(counter2);
         this.addChild(textCounter22);

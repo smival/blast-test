@@ -19,6 +19,11 @@ export class GameComponent implements Component
         return this.boosters[name].maxValue - this.boosters[name].curValue;
     }
 
+    public incrementTotalPoints(points: number): void
+    {
+        this.totalPoints += points;
+    }
+
     public useBooster(name:EBoosterType)
     {
         this.boosters[name].curValue++;

@@ -11,6 +11,7 @@ import {TileUtils} from "../utils/TileUtils";
 import {LevelComponent} from "../components/LevelComponent";
 import {ViewComponent} from "../components/ViewComponent";
 import {ESoundName, SoundUtils} from "../utils/SoundUtils";
+import {GameComponent} from "../components/GameComponent";
 
 export class BoosterSystem extends AppSystem
 {
@@ -20,6 +21,7 @@ export class BoosterSystem extends AppSystem
     protected tilesFamily: Family;
     protected boosterUIFamily: Family;
     protected levelFamily:Family;
+    protected gameFamily:Family;
 
     protected selectedBoosterUI: Container;
     protected selectedBoosterType: EBoosterType;
@@ -47,16 +49,24 @@ export class BoosterSystem extends AppSystem
         this.levelFamily = new FamilyBuilder(engine)
             .include(LevelComponent)
             .build();
+        this.gameFamily = new FamilyBuilder(engine)
+            .include(GameComponent)
+            .build();
     }
 
     public update(engine: GameEngine, delta: number): void
     {
         let level: LevelComponent;
+        let game: GameComponent;
+
         this.levelFamily.entities.forEach(entity => {
             level = entity.getComponent(LevelComponent);
         });
-        if (!level) return;
+        this.gameFamily.entities.forEach(gameEntity => {
+            game = gameEntity.getComponent(GameComponent);
+        });
 
+        // apply booster effect
         if (this.selectedBoosterUI) {
             this.tilesFamily.entities.filter(
                 tileEntity => tileEntity.getComponent(UIComponent).triggered
@@ -69,7 +79,10 @@ export class BoosterSystem extends AppSystem
                 switch (this.selectedBoosterType) {
                     case EBoosterType.bomb:
                         const affectedTiles = level.grid.getTilesInRadius(tileComp.gridPosition, this.bombRadius);
-                        level.incrementPoints(affectedTiles.length);
+                        const points = level.incrementPointsByTilesCount(affectedTiles.length);
+                        game.incrementTotalPoints(points);
+                        game.useBooster(this.selectedBoosterType);
+
                         SoundUtils.play(ESoundName.blast);
                         TileUtils.blastTiles(affectedTiles, level.grid);
                         this.tilesFamily.entities.forEach(tileEntity =>
@@ -91,6 +104,7 @@ export class BoosterSystem extends AppSystem
             });
         }
 
+        // select booster UI button
         this.boosterUIFamily.entities.filter(
             uiEntity => uiEntity.getComponent(UIComponent<PayloadBooster>).payload != null
                 && uiEntity.getComponent(UIComponent<PayloadBooster>).triggered
@@ -107,10 +121,11 @@ export class BoosterSystem extends AppSystem
                     this.selectedBoosterUI = null;
                     return;
                 }
-
-                this.selectedBoosterUI = uiComp.ui;
-                this.selectedBoosterType = uiComp.payload.type;
-                this.selectedBoosterUI.filters = [this.filter];
+                if (game.getBoosterCount(uiComp.payload.type) > 0) {
+                    this.selectedBoosterUI = uiComp.ui;
+                    this.selectedBoosterType = uiComp.payload.type;
+                    this.selectedBoosterUI.filters = [this.filter];
+                }
             });
     }
 }

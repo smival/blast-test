@@ -10,10 +10,11 @@ export class LevelCounterUI extends BaseCounterUI
         super();
 
         this.name = "levelCounter";
-        this.y = 60;
+        this.x = 20;
+        this.y = 70;
 
         const bg = new Sprite(Texture.from('counter_0.png'));
-        this._counter = new Text('99', {
+        this._counter = new Text('-', {
             fontFamily: 'Marvin',
             fontSize: 24,
             fill: 0xFFFFFF,
