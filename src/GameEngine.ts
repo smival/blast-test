@@ -27,6 +27,7 @@ import {BoosterSystem} from "./systems/BoosterSystem";
 import {EBoosterType} from "./types/EBoosterType";
 import {BombBoosterCounterUI} from "./ui/BombBoosterCounterUI";
 import {TeleportBoosterCounterUI} from "./ui/TeleportBoosterCounterUI";
+import {SoundUtils} from "./utils/SoundUtils";
 
 export class GameEngine extends Engine
 {
@@ -171,7 +172,8 @@ export class GameEngine extends Engine
         return new Promise(resolve =>
         {
             Loader.shared.add([
-                "red.png", "blue.png", "yellow.png", "meta.json", "green.png", "purple.png"]).load(() =>
+                "red.png", "blue.png", "yellow.png", "meta.json", "green.png", "purple.png",
+                ...SoundUtils.soundList()]).load(() =>
             {
                 resolve();
             });

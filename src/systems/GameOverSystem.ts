@@ -6,6 +6,7 @@ import {EGameState} from "../types/EGameState";
 import {LevelComponent} from "../components/LevelComponent";
 import {ETileState} from "../types/ETileState";
 import {EPauseReason} from "../types/EPauseReason";
+import {ESoundName, SoundUtils} from "../utils/SoundUtils";
 
 // game over = no tiles to blast and its last Shuffle
 // game over = not enough points for X steps
@@ -43,6 +44,7 @@ export class GameOverSystem extends AppSystem
         // wait all tiles before dialog
         if (engine.gameState == this.targetState && this.checkAnimationsCompleted()) {
             engine.pause({reason:EPauseReason.lose, popupTitle: "The Game is over! Start from scratch."});
+            SoundUtils.play(ESoundName.lose);
         }
 
         if (level.isGameOver(engine) && engine.gameState == EGameState.playing) {

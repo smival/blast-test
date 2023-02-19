@@ -7,6 +7,7 @@ import {LevelComponent} from "../components/LevelComponent";
 import {ViewComponent} from "../components/ViewComponent";
 import {ETileState} from "../types/ETileState";
 import {TileUtils} from "../utils/TileUtils";
+import {ESoundName, SoundUtils} from "../utils/SoundUtils";
 
 export class TileKillerSystem extends AppSystem
 {
@@ -61,6 +62,7 @@ export class TileKillerSystem extends AppSystem
                 // blast
                 if (blastTilesComps.length >= level.levelMeta.blastSize) {
                     hasBlast = true;
+                    SoundUtils.play(ESoundName.blast);
                     TileUtils.blastTiles(blastTilesComps, level.grid);
                 }
             });

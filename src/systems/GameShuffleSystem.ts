@@ -6,6 +6,7 @@ import {EGameState} from "../types/EGameState";
 import {LevelComponent} from "../components/LevelComponent";
 import {ETileState} from "../types/ETileState";
 import {EPauseReason} from "../types/EPauseReason";
+import {ESoundName, SoundUtils} from "../utils/SoundUtils";
 
 // has enough points
 export class GameShuffleSystem extends AppSystem
@@ -44,18 +45,7 @@ export class GameShuffleSystem extends AppSystem
                 reason:EPauseReason.shuffle,
                 popupTitle:`No any steps! Shuffle left: ${level.shufflesLeft}`
             });
-
-
-/*
-            this.level.incrementShuffle();
-            this.tilesFamily.entities.forEach(tileEntity =>
-            {
-                tileEntity.getComponent(ViewComponent).removed = true;
-                this.level.grid.clear();
-            });
-            engine.gameState = EGameState.init;
-
- */
+            SoundUtils.play(ESoundName.lose);
         }
 
         if (!level.hasSteps && level.hasShuffle && engine.gameState == EGameState.playing

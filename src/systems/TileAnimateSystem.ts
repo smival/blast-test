@@ -7,6 +7,7 @@ import {Utils} from "../utils/Utils";
 import {ViewComponent} from "../components/ViewComponent";
 import {Container, Point} from "pixi.js";
 import {ETileState} from "../types/ETileState";
+import {ESoundName, SoundUtils} from "../utils/SoundUtils";
 
 export class TileAnimateSystem extends AppSystem
 {
@@ -92,6 +93,7 @@ export class TileAnimateSystem extends AppSystem
 
                 if (moveComp.progress >= 1) {
                     moveComp.progress = 1;
+                    SoundUtils.play(ESoundName.fall);
                     this.moveView(entity.getComponent(ViewComponent).view, moveComp);
                     tileComp.state = ETileState.playable;
                     moveComp.strategy.onFinish(moveComp);

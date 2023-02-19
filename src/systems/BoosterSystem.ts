@@ -10,6 +10,7 @@ import {PayloadBooster} from "../types/IMeta";
 import {TileUtils} from "../utils/TileUtils";
 import {LevelComponent} from "../components/LevelComponent";
 import {ViewComponent} from "../components/ViewComponent";
+import {ESoundName, SoundUtils} from "../utils/SoundUtils";
 
 export class BoosterSystem extends AppSystem
 {
@@ -69,6 +70,7 @@ export class BoosterSystem extends AppSystem
                     case EBoosterType.bomb:
                         const affectedTiles = level.grid.getTilesInRadius(tileComp.gridPosition, this.bombRadius);
                         level.incrementPoints(affectedTiles.length);
+                        SoundUtils.play(ESoundName.blast);
                         TileUtils.blastTiles(affectedTiles, level.grid);
                         this.tilesFamily.entities.forEach(tileEntity =>
                         {

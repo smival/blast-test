@@ -6,6 +6,7 @@ import {EGameState} from "../types/EGameState";
 import {LevelComponent} from "../components/LevelComponent";
 import {ETileState} from "../types/ETileState";
 import {EPauseReason} from "../types/EPauseReason";
+import {ESoundName, SoundUtils} from "../utils/SoundUtils";
 
 // has enough points
 export class GameWinSystem extends AppSystem
@@ -45,6 +46,7 @@ export class GameWinSystem extends AppSystem
                 reason:EPauseReason.win,
                 popupTitle:`Congrats! You are winner!\nYou made ${level.levelMeta.winPoints.curValue} points and ${level.levelMeta.winSteps.curValue} steps\nLets play next level`
             });
+            SoundUtils.play(ESoundName.win);
         }
 
         if (level.isGameWin(engine) && engine.gameState == EGameState.playing) {
