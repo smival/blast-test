@@ -8,7 +8,6 @@ package-lock.json
 # Node artifact files
 node_modules/
 dist/
-dist_prod/
 files/
 
 # Compiled Java class files

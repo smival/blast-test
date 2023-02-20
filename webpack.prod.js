@@ -6,6 +6,6 @@ module.exports = merge(common, {
     mode: 'production',
     output: {
         filename: 'app.js',
-        path: path.resolve(__dirname, 'dist_prop')
+        path: path.resolve(__dirname, 'dist_prod')
     },
 });
