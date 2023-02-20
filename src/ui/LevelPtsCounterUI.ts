@@ -12,7 +12,7 @@ export class LevelPtsCounterUI extends BaseCounterUI
         this.name = "levelPointsCounter";
 
         this.x = 600;
-        this.y = 100;
+        this.y = 140;
 
         const counter2 = new Sprite(Texture.from('score_bar.png'));
         const textCounter22 = new Text('Очки', {

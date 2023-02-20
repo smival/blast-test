@@ -12,7 +12,7 @@ export class LevelStepsCounterUI extends BaseCounterUI
         this.name = "stepsCounter";
 
         this.x = 600;
-        this.y = 100;
+        this.y = 140;
 
         this._counter = new Text('-', {
             fontFamily: 'Marvin',
