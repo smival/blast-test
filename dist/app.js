@@ -39238,9 +39238,10 @@ class GameEngine extends ecs_1.Engine {
         this._speed = 1;
         this._tickCallback = (dt) => this.update(dt);
     }
-    start(stage) {
+    start(stage, renderer) {
         return __awaiter(this, void 0, void 0, function* () {
             this._stage = stage;
+            this._renderer = renderer;
             const FontFaceObserver = __webpack_require__(/*! fontfaceobserver */ "./node_modules/fontfaceobserver/fontfaceobserver.standalone.js");
             const font = new FontFaceObserver('Roboto Condensed');
             const font2 = new FontFaceObserver('Marvin');
@@ -39301,11 +39302,17 @@ class GameEngine extends ecs_1.Engine {
             pixi_js_1.Ticker.shared.maxFPS = 60;
             pixi_js_1.Ticker.shared.minFPS = 10;
             pixi_js_1.Ticker.shared.add(this._tickCallback);
-            const cont = stage.addChild(new pixi_js_1.Container());
-            cont.position.set(130, 130);
-            stage.addChild(new pixi_js_1.Container()).name = ViewComponent_1.ELayerName.stage;
-            stage.addChild(new pixi_js_1.Container()).name = ViewComponent_1.ELayerName.gui;
-            stage.addChild(cont).name = ViewComponent_1.ELayerName.game;
+            // view
+            const rootContainer = this._root = new pixi_js_1.Container();
+            const rootGraphics = new pixi_js_1.Graphics();
+            rootGraphics.beginFill(renderer.options.backgroundColor);
+            const gameContainer = new pixi_js_1.Container();
+            gameContainer.position.set(130, 130);
+            stage.addChild(rootContainer);
+            rootContainer.addChild(rootGraphics);
+            rootContainer.addChild(new pixi_js_1.Container()).name = ViewComponent_1.ELayerName.stage;
+            rootContainer.addChild(new pixi_js_1.Container()).name = ViewComponent_1.ELayerName.gui;
+            rootContainer.addChild(gameContainer).name = ViewComponent_1.ELayerName.game;
             this._systemsList.forEach(system => {
                 if (PARAMS[system.constructor.name])
                     this.addSystem(system);
@@ -39315,6 +39322,7 @@ class GameEngine extends ecs_1.Engine {
             fieldBg.width = 470;
             fieldBg.height = 530;
             fieldBg.position.set(100, 100);
+            // UI
             this.addEntity(EntitiesFactory_1.EntitiesFactory.createUICounter(this.addToLayer(new LevelProgressUI_1.LevelProgressUI(), ViewComponent_1.ELayerName.gui)));
             this.addEntity(EntitiesFactory_1.EntitiesFactory.createUICounter(this.addToLayer(new LevelCounterUI_1.LevelCounterUI(), ViewComponent_1.ELayerName.gui)));
             this.addEntity(EntitiesFactory_1.EntitiesFactory.createUICounter(this.addToLayer(new TotalPtsCounterUI_1.TotalPtsCounterUI(), ViewComponent_1.ELayerName.gui)));
@@ -39323,7 +39331,12 @@ class GameEngine extends ecs_1.Engine {
             this.addEntity(EntitiesFactory_1.EntitiesFactory.createUICounter(this.addToLayer(fieldBg, ViewComponent_1.ELayerName.gui)));
             this.addEntity(EntitiesFactory_1.EntitiesFactory.createUICounter(this.addToLayer(new BombBoosterCounterUI_1.BombBoosterCounterUI(), ViewComponent_1.ELayerName.gui), true, { type: EBoosterType_1.EBoosterType.bomb }));
             this.addEntity(EntitiesFactory_1.EntitiesFactory.createUICounter(this.addToLayer(new TeleportBoosterCounterUI_1.TeleportBoosterCounterUI(), ViewComponent_1.ELayerName.gui), true, { type: EBoosterType_1.EBoosterType.teleport }));
+            rootGraphics.drawRect(0, 0, 900, 700);
         });
+    }
+    resize(width, height) {
+        this._renderer.resize(width, height);
+        this.resizeGame(width, height);
     }
     onPaneSystemClick(e) {
         const system = this._systemsList.filter(sys => sys.constructor.name == e.presetKey).shift();
@@ -39335,11 +39348,11 @@ class GameEngine extends ecs_1.Engine {
         }
     }
     addToLayer(view, layer) {
-        return this.stage.getChildByName(layer ? layer : ViewComponent_1.ELayerName.stage)
+        return this._root.getChildByName(layer ? layer : ViewComponent_1.ELayerName.stage)
             .addChild(view);
     }
     getLayer(layerName) {
-        return this.stage.getChildByName(layerName);
+        return this._root.getChildByName(layerName);
     }
     loadAssets() {
         return __awaiter(this, void 0, void 0, function* () {
@@ -39383,6 +39396,12 @@ class GameEngine extends ecs_1.Engine {
     }
     get stage() {
         return this._stage;
+    }
+    resizeGame(appWidth, appHeight) {
+        const { width, height } = this._root;
+        let scale = Math.min(appWidth / width, appHeight / height);
+        scale = scale > 1 ? 1 : scale;
+        this._root.scale.set(scale, scale);
     }
     pause(data) {
         this._pause = true;
@@ -39445,6 +39464,9 @@ class GameStarter {
     }
     get stage() {
         return this._stage;
+    }
+    get renderer() {
+        return this._renderer;
     }
 }
 exports.GameStarter = GameStarter;
@@ -39769,8 +39791,14 @@ exports.UIEntity = UIEntity;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 const GameEngine_1 = __webpack_require__(/*! ./GameEngine */ "./src/GameEngine.ts");
 const GameStarter_1 = __webpack_require__(/*! ./GameStarter */ "./src/GameStarter.ts");
+const resize = () => {
+    GameEngine_1.Eng.resize(window.innerWidth, window.innerHeight);
+};
 const starter = new GameStarter_1.GameStarter();
-GameEngine_1.Eng.start(starter.stage).then();
+GameEngine_1.Eng.start(starter.stage, starter.renderer).then(() => {
+    window.addEventListener("resize", resize);
+    resize();
+});
 
 
 /***/ }),
@@ -40959,7 +40987,7 @@ class BombBoosterCounterUI extends BaseBoosterCounterUI_1.BaseBoosterCounterUI {
         super();
         this.name = "bombCounter";
         this.x = 630;
-        this.y = 400;
+        this.y = 440;
     }
 }
 exports.BombBoosterCounterUI = BombBoosterCounterUI;
@@ -41075,7 +41103,7 @@ class LevelPtsCounterUI extends BaseCounterUI_1.BaseCounterUI {
         super();
         this.name = "levelPointsCounter";
         this.x = 600;
-        this.y = 100;
+        this.y = 140;
         const counter2 = new pixi_js_1.Sprite(pixi_js_1.Texture.from('score_bar.png'));
         const textCounter22 = new pixi_js_1.Text('Очки', {
             fontFamily: 'Roboto Condensed',
@@ -41130,7 +41158,7 @@ class LevelStepsCounterUI extends BaseCounterUI_1.BaseCounterUI {
         super();
         this.name = "stepsCounter";
         this.x = 600;
-        this.y = 100;
+        this.y = 140;
         this._counter = new pixi_js_1.Text('-', {
             fontFamily: 'Marvin',
             fontSize: 55,
@@ -41167,7 +41195,7 @@ class TeleportBoosterCounterUI extends BaseBoosterCounterUI_1.BaseBoosterCounter
         super();
         this.name = "teleportCounter";
         this.x = 740;
-        this.y = 400;
+        this.y = 440;
     }
 }
 exports.TeleportBoosterCounterUI = TeleportBoosterCounterUI;
@@ -41191,8 +41219,8 @@ class TotalPtsCounterUI extends BaseCounterUI_1.BaseCounterUI {
     constructor() {
         super();
         this.name = "totalWinCounter";
-        this.x = 650;
-        this.y = 30;
+        this.x = 670;
+        this.y = 70;
         const counter1 = new pixi_js_1.Sprite(pixi_js_1.Texture.from('counter_1.png'));
         this._counter = new pixi_js_1.Text('-', {
             fontFamily: 'Marvin',
@@ -50350,7 +50378,7 @@ module.exports = {
 /******/ 	
 /******/ 	/* webpack/runtime/getFullHash */
 /******/ 	(() => {
-/******/ 		__webpack_require__.h = () => ("ec00caf5d0ba757c88e8")
+/******/ 		__webpack_require__.h = () => ("0f5ac30c06a497b2059e")
 /******/ 	})();
 /******/ 	
 /******/ 	/* webpack/runtime/global */
