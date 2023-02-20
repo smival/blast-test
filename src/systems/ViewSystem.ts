@@ -59,12 +59,8 @@ export class ViewSystem extends AppSystem
             }
             if (entity instanceof TileEntity) {
                 const tileComp = entity.getComponent(TileComponent);
-                const viewComp = entity.getComponent(ViewComponent);
-                // remove tile
-                if (viewComp.removed) {
-                    engine.removeEntity(entity);
-                }// move tile
-                else if (tileComp.state == ETileState.playable) {
+                // move tile
+                if (tileComp.state == ETileState.playable) {
                     view.position.set(tileComp.gridPosition.x * view.width, tileComp.gridPosition.y * view.height);
                 }
             }

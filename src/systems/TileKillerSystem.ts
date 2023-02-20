@@ -4,7 +4,6 @@ import {Family, FamilyBuilder} from "@nova-engine/ecs";
 import {TileComponent} from "../components/TileComponent";
 import {UIComponent} from "../components/UIComponent";
 import {LevelComponent} from "../components/LevelComponent";
-import {ViewComponent} from "../components/ViewComponent";
 import {ETileState} from "../types/ETileState";
 import {TileUtils} from "../utils/TileUtils";
 import {ESoundName, SoundUtils} from "../utils/SoundUtils";
@@ -80,13 +79,8 @@ export class TileKillerSystem extends AppSystem
             const points = level.incrementPointsByTilesCount(blastTilesComps.length);
             game.incrementTotalPoints(points);
 
-            this.tilesFamily.entities.forEach(tileEntity =>
-            {
-                // remove view
-                if (blastTilesComps.indexOf(tileEntity.getComponent(TileComponent)) != -1) {
-                    tileEntity.getComponent(ViewComponent).removed = true;
-                }
-            });
+            this.tilesFamily.entities.filter(tile => blastTilesComps.indexOf(tile.getComponent(TileComponent)) != -1)
+                .forEach(tile => engine.removeEntity(tile));
         }
     }
 }

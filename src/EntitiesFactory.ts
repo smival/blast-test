@@ -98,7 +98,6 @@ export class EntitiesFactory
         view.interactive = view.interactiveChildren = true;
         view.position.set(position.x * view.width, position.y * view.height);
         entity.getComponent(ViewComponent).layerName = ELayerName.game;
-        entity.getComponent(ViewComponent).removed = false;
 
         entity.putComponent(UIComponent);
         entity.getComponent(UIComponent).ui = view;

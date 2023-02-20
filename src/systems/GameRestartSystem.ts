@@ -9,7 +9,6 @@ import {LevelEntity} from "../entity/LevelEntity";
 import {GameEntity} from "../entity/GameEntity";
 import {Family, FamilyBuilder} from "@nova-engine/ecs";
 import {TileComponent} from "../components/TileComponent";
-import {ViewComponent} from "../components/ViewComponent";
 
 export class GameRestartSystem extends AppSystem
 {
@@ -60,7 +59,7 @@ export class GameRestartSystem extends AppSystem
                             gameComp.currentLevel++;
                             engine.removeEntity(this.levelEntity);
                             this.createLevel(engine, gameComp.currentLevel);
-                            this.clearTiles();
+                            this.clearTiles(engine);
                         } else {
                             engine.pause({
                                 reason:EPauseReason.wonWholeGame,
@@ -75,14 +74,14 @@ export class GameRestartSystem extends AppSystem
                         engine.removeEntity(this.gameEntity);
                         engine.removeEntity(this.levelEntity);
                         this.createLevel(engine);
-                        this.clearTiles();
+                        this.clearTiles(engine);
                         this.createFromScratch(engine);
                         break;
                     case EPauseReason.shuffle:
                         const levelComp = this.levelEntity.getComponent(LevelComponent);
                         levelComp.incrementShuffle();
                         levelComp.grid.clear();
-                        this.clearTiles();
+                        this.clearTiles(engine);
                         break;
                 }
             }
@@ -91,12 +90,9 @@ export class GameRestartSystem extends AppSystem
         }
     }
 
-    protected clearTiles(): void {
+    protected clearTiles(engine: GameEngine): void {
 
-        this.tilesFamily.entities.forEach(tileEntity =>
-        {
-            tileEntity.getComponent(ViewComponent).removed = true;
-        });
+        this.tilesFamily.entities.forEach(tile => engine.removeEntity(tile));
     }
 
     protected createFromScratch(engine: GameEngine): void

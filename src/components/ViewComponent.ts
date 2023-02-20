@@ -5,7 +5,6 @@ export class ViewComponent implements Component
 {
     view: Container;
     layerName: ELayerName;
-    removed: boolean;
 }
 
 export enum ELayerName

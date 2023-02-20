@@ -93,13 +93,8 @@ export class BoosterSystem extends AppSystem
 
                             SoundUtils.play(ESoundName.blast);
                             TileUtils.blastTiles(affectedTiles, level.grid);
-                            this.tilesFamily.entities.forEach(tileEntity =>
-                            {
-                                // remove views
-                                if (affectedTiles.indexOf(tileEntity.getComponent(TileComponent)) != -1) {
-                                    tileEntity.getComponent(ViewComponent).removed = true;
-                                }
-                            });
+                            this.tilesFamily.entities.filter(tileEntity =>affectedTiles.indexOf(tileEntity.getComponent(TileComponent)) != -1)
+                                .forEach(tile => engine.removeEntity(tile));
                             this.unSelectBooster();
 
                             break;
