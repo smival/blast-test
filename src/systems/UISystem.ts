@@ -10,8 +10,8 @@ import {EBoosterType} from "../types/EBoosterType";
 export class UISystem extends AppSystem
 {
     protected uiFamily: Family;
-    protected levelFamily:Family;
-    protected gameFamily:Family;
+    protected levelFamily: Family;
+    protected gameFamily: Family;
 
     constructor(priority: number)
     {
@@ -38,10 +38,12 @@ export class UISystem extends AppSystem
         let meta: ILevelMeta;
         let game: GameComponent;
 
-        this.levelFamily.entities.forEach(levelEntity => {
+        this.levelFamily.entities.forEach(levelEntity =>
+        {
             meta = levelEntity.getComponent(LevelComponent).levelMeta;
         });
-        this.gameFamily.entities.forEach(gameEntity => {
+        this.gameFamily.entities.forEach(gameEntity =>
+        {
             game = gameEntity.getComponent(GameComponent);
         });
 

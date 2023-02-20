@@ -1,6 +1,7 @@
 import {BaseBoosterCounterUI} from "./BaseBoosterCounterUI";
 
-export class BombBoosterCounterUI extends BaseBoosterCounterUI {
+export class BombBoosterCounterUI extends BaseBoosterCounterUI
+{
     constructor()
     {
         super();

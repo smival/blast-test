@@ -13,7 +13,7 @@ export class GameWinSystem extends AppSystem
 {
     protected readonly targetState: EGameState = EGameState.win;
     protected tilesFamily?: Family;
-    protected levelFamily:Family;
+    protected levelFamily: Family;
 
     constructor(priority: number)
     {
@@ -35,7 +35,8 @@ export class GameWinSystem extends AppSystem
     public update(engine: GameEngine, delta: number): void
     {
         let level;
-        this.levelFamily.entities.forEach(entity => {
+        this.levelFamily.entities.forEach(entity =>
+        {
             level = entity.getComponent(LevelComponent);
         });
         if (!level) return;
@@ -43,8 +44,8 @@ export class GameWinSystem extends AppSystem
         // wait all tiles before dialog
         if (engine.gameState == this.targetState && this.checkAnimationsCompleted()) {
             engine.pause({
-                reason:EPauseReason.win,
-                popupTitle:`Congrats! You are winner!\nYou made ${level.levelMeta.winPoints.curValue} points and ${level.levelMeta.winSteps.curValue} steps\nLets play next level`
+                reason: EPauseReason.win,
+                popupTitle: `Congrats! You are winner!\nYou made ${level.levelMeta.winPoints.curValue} points and ${level.levelMeta.winSteps.curValue} steps\nLets play next level`
             });
             SoundUtils.play(ESoundName.win);
         }

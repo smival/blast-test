@@ -7,7 +7,8 @@ export interface IMeta
     readonly levels: ILevelMeta[];
 }
 
-export interface PayloadBooster {
+export interface PayloadBooster
+{
     type: EBoosterType;
 }
 

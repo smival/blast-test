@@ -93,7 +93,7 @@ export class BoosterSystem extends AppSystem
 
                             SoundUtils.play(ESoundName.blast);
                             TileUtils.blastTiles(affectedTiles, level.grid);
-                            this.tilesFamily.entities.filter(tileEntity =>affectedTiles.indexOf(tileEntity.getComponent(TileComponent)) != -1)
+                            this.tilesFamily.entities.filter(tileEntity => affectedTiles.indexOf(tileEntity.getComponent(TileComponent)) != -1)
                                 .forEach(tile => engine.removeEntity(tile));
                             this.unSelectBooster();
 
@@ -113,14 +113,14 @@ export class BoosterSystem extends AppSystem
                                 const gridPos1 = tile1.gridPosition.clone();
                                 const gridPos2 = tile2.gridPosition.clone();
 
-                                    TileUtils.moveTiles(
-                                        tile1, pair1.getComponent(MoveComponent),
-                                        pos1, pos2
-                                    );
-                                    TileUtils.moveTiles(
-                                        tile2, pair2.getComponent(MoveComponent),
-                                        pos2, pos1
-                                    );
+                                TileUtils.moveTiles(
+                                    tile1, pair1.getComponent(MoveComponent),
+                                    pos1, pos2
+                                );
+                                TileUtils.moveTiles(
+                                    tile2, pair2.getComponent(MoveComponent),
+                                    pos2, pos1
+                                );
 
                                 level.grid.putCell(gridPos1, tile2);
                                 level.grid.putCell(gridPos2, tile1);

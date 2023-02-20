@@ -142,8 +142,8 @@ export class GameEngine extends Engine
         this.addEntity(EntitiesFactory.createUICounter(this.addToLayer(new LevelStepsCounterUI(), ELayerName.gui)));
         this.addEntity(EntitiesFactory.createUICounter(this.addToLayer(fieldBg, ELayerName.gui)));
 
-        this.addEntity(EntitiesFactory.createUICounter<PayloadBooster>(this.addToLayer(new BombBoosterCounterUI(), ELayerName.gui), true, {type:EBoosterType.bomb}));
-        this.addEntity(EntitiesFactory.createUICounter<PayloadBooster>(this.addToLayer(new TeleportBoosterCounterUI(), ELayerName.gui), true, {type:EBoosterType.teleport}));
+        this.addEntity(EntitiesFactory.createUICounter<PayloadBooster>(this.addToLayer(new BombBoosterCounterUI(), ELayerName.gui), true, {type: EBoosterType.bomb}));
+        this.addEntity(EntitiesFactory.createUICounter<PayloadBooster>(this.addToLayer(new TeleportBoosterCounterUI(), ELayerName.gui), true, {type: EBoosterType.teleport}));
     }
 
     protected onPaneSystemClick(e: TpChangeEvent<boolean>): void
@@ -193,7 +193,8 @@ export class GameEngine extends Engine
     {
         if (this._pause) {
             Ticker.shared.remove(this._tickCallback);
-            window.requestAnimationFrame(() => {
+            window.requestAnimationFrame(() =>
+            {
                 alert(this.pauseData.popupTitle);
                 this._gameState = EGameState.restart;
                 this.play();

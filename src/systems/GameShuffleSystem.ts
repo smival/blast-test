@@ -13,7 +13,7 @@ export class GameShuffleSystem extends AppSystem
 {
     protected readonly targetState: EGameState = EGameState.shuffle;
     protected tilesFamily?: Family;
-    protected levelFamily:Family;
+    protected levelFamily: Family;
 
     constructor(priority: number)
     {
@@ -35,21 +35,22 @@ export class GameShuffleSystem extends AppSystem
     public update(engine: GameEngine, delta: number): void
     {
         let level;
-        this.levelFamily.entities.forEach(entity => {
+        this.levelFamily.entities.forEach(entity =>
+        {
             level = entity.getComponent(LevelComponent);
         });
         if (!level) return;
 
         if (engine.gameState == this.targetState && this.checkAnimationsCompleted()) {
             engine.pause({
-                reason:EPauseReason.shuffle,
-                popupTitle:`No any steps! Shuffle left: ${level.shufflesLeft}`
+                reason: EPauseReason.shuffle,
+                popupTitle: `No any steps! Shuffle left: ${level.shufflesLeft}`
             });
             SoundUtils.play(ESoundName.lose);
         }
 
         if (!level.hasSteps && level.hasShuffle && engine.gameState == EGameState.playing
-        && this.checkAnimationsCompleted()) {
+            && this.checkAnimationsCompleted()) {
             engine.gameState = this.targetState;
         }
     }

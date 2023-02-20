@@ -42,9 +42,9 @@ export class TileAnimateSystem extends AppSystem
             const tileComp = tileEntity.getComponent(TileComponent);
             TileUtils.moveTiles(tileComp, moveComp, view.position.clone(),
                 new Point(
-                tileComp.gridPosition.x * view.width,
-                tileComp.gridPosition.y * view.height
-            ), 4);
+                    tileComp.gridPosition.x * view.width,
+                    tileComp.gridPosition.y * view.height
+                ), 4);
         });
         // new tiles falling from grid outside
         const entities = this.tilesFamily.entities.filter(

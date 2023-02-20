@@ -62,7 +62,7 @@ export class GameRestartSystem extends AppSystem
                             this.clearTiles(engine);
                         } else {
                             engine.pause({
-                                reason:EPauseReason.wonWholeGame,
+                                reason: EPauseReason.wonWholeGame,
                                 popupTitle: `Winner winner chicken dinner`
                             });
                             return;
@@ -90,15 +90,16 @@ export class GameRestartSystem extends AppSystem
         }
     }
 
-    protected clearTiles(engine: GameEngine): void {
+    protected clearTiles(engine: GameEngine): void
+    {
 
         this.tilesFamily.entities.forEach(tile => engine.removeEntity(tile));
     }
 
     protected createFromScratch(engine: GameEngine): void
     {
-       this.createGame(engine);
-       this.createLevel(engine);
+        this.createGame(engine);
+        this.createLevel(engine);
     }
 
     protected createGame(engine: GameEngine): void

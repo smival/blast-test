@@ -10,12 +10,12 @@ export enum ESoundName
 
 export class SoundUtils
 {
-    public static soundList():string[]
+    public static soundList(): string[]
     {
         return Object.keys(ESoundName).map(key => ESoundName[key]);
     }
 
-    public static play(sound:ESoundName)
+    public static play(sound: ESoundName)
     {
         Loader.shared.resources[sound].data.play();
     }

@@ -12,8 +12,8 @@ import {GameComponent} from "../components/GameComponent";
 export class TileKillerSystem extends AppSystem
 {
     protected tilesFamily?: Family;
-    protected levelFamily:Family;
-    protected gameFamily:Family;
+    protected levelFamily: Family;
+    protected gameFamily: Family;
 
     constructor(priority: number)
     {
@@ -43,10 +43,12 @@ export class TileKillerSystem extends AppSystem
         let level: LevelComponent;
         let game: GameComponent;
 
-        this.levelFamily.entities.forEach(entity => {
+        this.levelFamily.entities.forEach(entity =>
+        {
             level = entity.getComponent(LevelComponent);
         });
-        this.gameFamily.entities.forEach(gameEntity => {
+        this.gameFamily.entities.forEach(gameEntity =>
+        {
             game = gameEntity.getComponent(GameComponent);
         });
 

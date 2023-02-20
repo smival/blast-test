@@ -9,7 +9,7 @@ import {LevelComponent} from "../components/LevelComponent";
 export class TileSpawnerSystem extends AppSystem
 {
     protected tilesFamily?: Family;
-    protected levelFamily:Family;
+    protected levelFamily: Family;
 
     constructor(priority: number)
     {
@@ -33,7 +33,8 @@ export class TileSpawnerSystem extends AppSystem
     public update(engine: GameEngine, delta: number): void
     {
         let level;
-        this.levelFamily.entities.forEach(entity => {
+        this.levelFamily.entities.forEach(entity =>
+        {
             level = entity.getComponent(LevelComponent);
         });
         if (!level) return;

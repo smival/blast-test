@@ -24,9 +24,9 @@ export class Grid<T extends GridCell>
     {
         return this.getNotEmptyCells()
             .filter(cell => cell.gridPosition.x >= position.x - radius
-                        && cell.gridPosition.x <= position.x + radius
-                        && cell.gridPosition.y >= position.y - radius
-                        && cell.gridPosition.y <= position.y + radius
+                && cell.gridPosition.x <= position.x + radius
+                && cell.gridPosition.y >= position.y - radius
+                && cell.gridPosition.y <= position.y + radius
             );
     }
 

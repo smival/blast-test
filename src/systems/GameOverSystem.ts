@@ -14,7 +14,7 @@ export class GameOverSystem extends AppSystem
 {
     protected readonly targetState: EGameState = EGameState.lose;
     protected tilesFamily?: Family;
-    protected levelFamily:Family;
+    protected levelFamily: Family;
 
     constructor(priority: number)
     {
@@ -36,14 +36,15 @@ export class GameOverSystem extends AppSystem
     public update(engine: GameEngine, delta: number): void
     {
         let level;
-        this.levelFamily.entities.forEach(entity => {
+        this.levelFamily.entities.forEach(entity =>
+        {
             level = entity.getComponent(LevelComponent);
         });
         if (!level) return;
 
         // wait all tiles before dialog
         if (engine.gameState == this.targetState && this.checkAnimationsCompleted()) {
-            engine.pause({reason:EPauseReason.lose, popupTitle: "The Game is over! Start from scratch."});
+            engine.pause({reason: EPauseReason.lose, popupTitle: "The Game is over! Start from scratch."});
             SoundUtils.play(ESoundName.lose);
         }
 

@@ -6,7 +6,7 @@ import {Point} from "pixi.js";
 
 export class TileUtils
 {
-    public static blastTiles(tiles:TileComponent[], grid: Grid<TileComponent>): void
+    public static blastTiles(tiles: TileComponent[], grid: Grid<TileComponent>): void
     {
         const affectedCols = [];
         tiles.forEach(tileComp =>
@@ -25,7 +25,7 @@ export class TileUtils
     }
 
     public static moveTiles(tileComp: TileComponent, moveComp: MoveComponent,
-                            startPt:Point, endPt: Point, speed?:number): void
+                            startPt: Point, endPt: Point, speed?: number): void
     {
         tileComp.state = ETileState.animate;
         moveComp.strategy = new MoveToTargetStrategy();

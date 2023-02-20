@@ -11,10 +11,10 @@ export class GameComponent implements Component
 
     public isMaxLevel(): boolean
     {
-       return this.currentLevel >= this.maxLevel;
+        return this.currentLevel >= this.maxLevel;
     }
 
-    public getBoosterCount(name:EBoosterType): number
+    public getBoosterCount(name: EBoosterType): number
     {
         return this.boosters[name].maxValue - this.boosters[name].curValue;
     }
@@ -24,7 +24,7 @@ export class GameComponent implements Component
         this.totalPoints += points;
     }
 
-    public useBooster(name:EBoosterType)
+    public useBooster(name: EBoosterType)
     {
         this.boosters[name].curValue++;
     }

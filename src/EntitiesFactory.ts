@@ -28,7 +28,7 @@ export class EntitiesFactory
     public static createUICounter<PayloadType>(
         view: Container,
         clickable: boolean = false,
-        payload:PayloadType = null): UIEntity
+        payload: PayloadType = null): UIEntity
     {
         const entity = new UIEntity();
         entity.id = this.nextEntityId();
@@ -44,7 +44,7 @@ export class EntitiesFactory
         return entity;
     }
 
-    public static createLevel(engine: GameEngine, lavelMeta:ILevelMeta): LevelEntity
+    public static createLevel(engine: GameEngine, lavelMeta: ILevelMeta): LevelEntity
     {
         const entity = new LevelEntity();
         entity.id = this.nextEntityId();
@@ -69,7 +69,7 @@ export class EntitiesFactory
 
         const comp = entity.putComponent(GameComponent);
         comp.currentLevel = 0;
-        comp.maxLevel = meta.levels.length-1;
+        comp.maxLevel = meta.levels.length - 1;
         comp.totalPoints = 0;
         comp.boosters = meta.boosters;
         for (let compKey in comp.boosters) {

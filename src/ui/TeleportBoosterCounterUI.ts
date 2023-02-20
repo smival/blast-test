@@ -1,6 +1,7 @@
 import {BaseBoosterCounterUI} from "./BaseBoosterCounterUI";
 
-export class TeleportBoosterCounterUI extends BaseBoosterCounterUI {
+export class TeleportBoosterCounterUI extends BaseBoosterCounterUI
+{
     constructor()
     {
         super();
