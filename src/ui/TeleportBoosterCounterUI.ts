@@ -6,7 +6,7 @@ export class TeleportBoosterCounterUI extends BaseBoosterCounterUI {
         super();
 
         this.name = "teleportCounter";
-        this.x = 710;
+        this.x = 740;
         this.y = 400;
     }
 }

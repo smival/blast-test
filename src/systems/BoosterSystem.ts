@@ -12,16 +12,20 @@ import {LevelComponent} from "../components/LevelComponent";
 import {ViewComponent} from "../components/ViewComponent";
 import {ESoundName, SoundUtils} from "../utils/SoundUtils";
 import {GameComponent} from "../components/GameComponent";
+import {TileEntity} from "../entity/TileEntity";
+import {MoveComponent} from "../components/MoveComponent";
 
 export class BoosterSystem extends AppSystem
 {
     // todo move to meta
     public readonly bombRadius: number = 2;
 
+    protected teleportFirstEntity: TileEntity;
+
     protected tilesFamily: Family;
     protected boosterUIFamily: Family;
-    protected levelFamily:Family;
-    protected gameFamily:Family;
+    protected levelFamily: Family;
+    protected gameFamily: Family;
 
     protected selectedBoosterUI: Container;
     protected selectedBoosterType: EBoosterType;
@@ -59,10 +63,12 @@ export class BoosterSystem extends AppSystem
         let level: LevelComponent;
         let game: GameComponent;
 
-        this.levelFamily.entities.forEach(entity => {
+        this.levelFamily.entities.forEach(entity =>
+        {
             level = entity.getComponent(LevelComponent);
         });
-        this.gameFamily.entities.forEach(gameEntity => {
+        this.gameFamily.entities.forEach(gameEntity =>
+        {
             game = gameEntity.getComponent(GameComponent);
         });
 
@@ -72,36 +78,76 @@ export class BoosterSystem extends AppSystem
                 tileEntity => tileEntity.getComponent(UIComponent).triggered
                     && tileEntity.getComponent(TileComponent).state == ETileState.playable
             )
-            .forEach(triggeredTileEntity =>
-            {
-                triggeredTileEntity.getComponent(UIComponent).cleanTriggered();
-                const tileComp = triggeredTileEntity.getComponent(TileComponent);
-                switch (this.selectedBoosterType) {
-                    case EBoosterType.bomb:
-                        const affectedTiles = level.grid.getTilesInRadius(tileComp.gridPosition, this.bombRadius);
-                        const points = level.incrementPointsByTilesCount(affectedTiles.length);
-                        game.incrementTotalPoints(points);
-                        game.useBooster(this.selectedBoosterType);
+                .forEach(triggeredTileEntity =>
+                {
+                    const uiComp = triggeredTileEntity.getComponent(UIComponent);
+                    const tileComp = triggeredTileEntity.getComponent(TileComponent);
+                    uiComp.cleanTriggered();
 
-                        SoundUtils.play(ESoundName.blast);
-                        TileUtils.blastTiles(affectedTiles, level.grid);
-                        this.tilesFamily.entities.forEach(tileEntity =>
-                        {
-                            // remove view
-                            if (affectedTiles.indexOf(tileEntity.getComponent(TileComponent)) != -1) {
-                                tileEntity.getComponent(ViewComponent).removed = true;
+                    switch (this.selectedBoosterType) {
+                        case EBoosterType.bomb:
+                            const affectedTiles = level.grid.getTilesInRadius(tileComp.gridPosition, this.bombRadius);
+                            const points = level.incrementPointsByTilesCount(affectedTiles.length);
+                            game.incrementTotalPoints(points);
+                            game.useBooster(this.selectedBoosterType);
+
+                            SoundUtils.play(ESoundName.blast);
+                            TileUtils.blastTiles(affectedTiles, level.grid);
+                            this.tilesFamily.entities.forEach(tileEntity =>
+                            {
+                                // remove views
+                                if (affectedTiles.indexOf(tileEntity.getComponent(TileComponent)) != -1) {
+                                    tileEntity.getComponent(ViewComponent).removed = true;
+                                }
+                            });
+                            this.unSelectBooster();
+
+                            break;
+                        case EBoosterType.teleport:
+                            if (this.teleportFirstEntity) {
+                                uiComp.ui.filters = [];
                             }
-                        });
-                        break;
-                    case EBoosterType.teleport:
+                            // apply teleport
+                            if (this.teleportFirstEntity && this.teleportFirstEntity != triggeredTileEntity) {
+                                const pair1 = this.teleportFirstEntity;
+                                const pair2 = triggeredTileEntity;
+                                const pos1 = pair1.getComponent(ViewComponent).view.position.clone();
+                                const pos2 = pair2.getComponent(ViewComponent).view.position.clone();
+                                const tile1 = pair1.getComponent(TileComponent);
+                                const tile2 = pair2.getComponent(TileComponent);
+                                const gridPos1 = tile1.gridPosition.clone();
+                                const gridPos2 = tile2.gridPosition.clone();
 
-                        break;
-                }
-                if (this.selectedBoosterUI) {
-                    this.selectedBoosterUI.filters = [];
-                    this.selectedBoosterUI = null;
-                }
-            });
+                                    TileUtils.moveTiles(
+                                        tile1, pair1.getComponent(MoveComponent),
+                                        pos1, pos2
+                                    );
+                                    TileUtils.moveTiles(
+                                        tile2, pair2.getComponent(MoveComponent),
+                                        pos2, pos1
+                                    );
+
+                                level.grid.putCell(gridPos1, tile2);
+                                level.grid.putCell(gridPos2, tile1);
+
+                                game.useBooster(this.selectedBoosterType);
+                                this.unSelectBooster();
+                                this.teleportFirstEntity.getComponent(UIComponent).ui.filters = [];
+                                this.teleportFirstEntity = null;
+                                return;
+                            }
+                            // unselect
+                            if (this.teleportFirstEntity == triggeredTileEntity) {
+                                this.teleportFirstEntity = null;
+                                return;
+                            }
+                            // select
+                            this.teleportFirstEntity = triggeredTileEntity;
+                            uiComp.ui.filters = [this.filter];
+
+                            break;
+                    }
+                });
         }
 
         // select booster UI button
@@ -127,5 +173,11 @@ export class BoosterSystem extends AppSystem
                     this.selectedBoosterUI.filters = [this.filter];
                 }
             });
+    }
+
+    protected unSelectBooster(): void
+    {
+        this.selectedBoosterUI.filters = [];
+        this.selectedBoosterUI = null;
     }
 }

@@ -10,11 +10,12 @@
 - [x] Update UI
 - [x] Switch levels and parse its meta
 - [x] Booster Bomb
+- [x] Blast/Fall Sound
+- [x] Booster Teleport
 
 ### Todos
-- [ ] Booster Teleport
-- [ ] Booster SuperTile
+
 
 ### May be
-- [ ] Blast/Fall Sound
 - [ ] Particles
+- [ ] Booster SuperTile

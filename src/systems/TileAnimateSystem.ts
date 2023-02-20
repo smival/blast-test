@@ -2,12 +2,13 @@ import {AppSystem} from "./AppSystem";
 import {GameEngine} from "../GameEngine";
 import {Family, FamilyBuilder} from "@nova-engine/ecs";
 import {TileComponent} from "../components/TileComponent";
-import {MoveComponent, MoveToTargetStrategy} from "../components/MoveComponent";
+import {MoveComponent} from "../components/MoveComponent";
 import {Utils} from "../utils/Utils";
 import {ViewComponent} from "../components/ViewComponent";
 import {Container, Point} from "pixi.js";
 import {ETileState} from "../types/ETileState";
 import {ESoundName, SoundUtils} from "../utils/SoundUtils";
+import {TileUtils} from "../utils/TileUtils";
 
 export class TileAnimateSystem extends AppSystem
 {
@@ -39,14 +40,11 @@ export class TileAnimateSystem extends AppSystem
             const moveComp = tileEntity.getComponent(MoveComponent);
             const {view} = tileEntity.getComponent(ViewComponent);
             const tileComp = tileEntity.getComponent(TileComponent);
-            tileComp.state = ETileState.animate;
-            moveComp.speed = 4;
-            moveComp.strategy = new MoveToTargetStrategy();
-            moveComp.startPoint = view.position.clone();
-            moveComp.endPoint = new Point(
+            TileUtils.moveTiles(tileComp, moveComp, view.position.clone(),
+                new Point(
                 tileComp.gridPosition.x * view.width,
                 tileComp.gridPosition.y * view.height
-            );
+            ), 4);
         });
         // new tiles falling from grid outside
         const entities = this.tilesFamily.entities.filter(
@@ -67,13 +65,12 @@ export class TileAnimateSystem extends AppSystem
             const tileComp = tileEntity.getComponent(TileComponent);
             const {view} = tileEntity.getComponent(ViewComponent);
             const {x, y} = tileComp.gridPosition;
-            tileComp.state = ETileState.animate;
-            moveComp.strategy = new MoveToTargetStrategy();
-            moveComp.endPoint = new Point(
-                tileComp.gridPosition.x * view.width,
-                tileComp.gridPosition.y * view.height
-            );
-            moveComp.startPoint = new Point(moveComp.endPoint.x, (y - colsDelta[x]) * view.height);
+            TileUtils.moveTiles(tileComp, moveComp,
+                new Point(tileComp.gridPosition.x * view.width, (y - colsDelta[x]) * view.height),
+                new Point(
+                    tileComp.gridPosition.x * view.width,
+                    tileComp.gridPosition.y * view.height
+                ));
         });
 
         // todo move strategy (move code to strategy)

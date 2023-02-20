@@ -31,9 +31,18 @@ export class LevelPtsCounterUI extends BaseCounterUI
         this._counter.anchor.set(0.5, 0);
         this._counter.position.set(130, 170);
 
+        const text = new Text('Бустеры', {
+            fontFamily: 'Roboto Condensed',
+            fontSize: 24,
+            fill: 0xFFFFFF,
+            align: 'center'
+        });
+        text.position.set(100, 260);
+
         this.addChild(counter2);
         this.addChild(textCounter22);
         this.addChild(this._counter);
+        this.addChild(text);
     }
 
     public set value(value: number)
