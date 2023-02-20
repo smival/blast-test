@@ -25,6 +25,11 @@ export class GameStarter
         return this._stage;
     }
 
+    public get renderer(): AbstractRenderer
+    {
+        return this._renderer;
+    }
+
     public render = (): void =>
     {
         this._renderer.render(this._stage);

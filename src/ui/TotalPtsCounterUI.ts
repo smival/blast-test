@@ -11,8 +11,8 @@ export class TotalPtsCounterUI extends BaseCounterUI
 
         this.name = "totalWinCounter";
 
-        this.x = 650;
-        this.y = 30;
+        this.x = 670;
+        this.y = 70;
 
         const counter1 = new Sprite(Texture.from('counter_1.png'));
         this._counter = new Text('-', {

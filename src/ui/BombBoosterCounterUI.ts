@@ -8,6 +8,6 @@ export class BombBoosterCounterUI extends BaseBoosterCounterUI
 
         this.name = "bombCounter";
         this.x = 630;
-        this.y = 400;
+        this.y = 440;
     }
 }

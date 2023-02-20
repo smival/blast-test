@@ -1,4 +1,14 @@
-import {Container, filters, Loader, NineSlicePlane, Texture, Ticker, TickerCallback} from "pixi.js";
+import {
+    Container,
+    filters,
+    Loader,
+    NineSlicePlane,
+    Texture,
+    Ticker,
+    TickerCallback,
+    Graphics,
+    AbstractRenderer
+} from "pixi.js";
 import {Engine} from "@nova-engine/ecs";
 import {IMeta, PayloadBooster} from "./types/IMeta";
 import {System} from "@nova-engine/ecs/lib/System";
@@ -43,12 +53,15 @@ export class GameEngine extends Engine
     private readonly _speed: number = 1;
     private readonly _tickCallback: TickerCallback<any> = (dt) => this.update(dt)
 
+    private _root: Container;
     private _stage: Container;
+    private _renderer: AbstractRenderer;
     private _pane: Pane;
 
-    public async start(stage: Container): Promise<void>
+    public async start(stage: Container, renderer: AbstractRenderer): Promise<void>
     {
         this._stage = stage;
+        this._renderer = renderer;
 
         const FontFaceObserver = require('fontfaceobserver');
         const font = new FontFaceObserver('Roboto Condensed');
@@ -116,12 +129,18 @@ export class GameEngine extends Engine
         Ticker.shared.minFPS = 10;
         Ticker.shared.add(this._tickCallback);
 
-        const cont = stage.addChild(new Container());
-        cont.position.set(130, 130);
+        // view
+        const rootContainer = this._root = new Container();
+        const rootGraphics = new Graphics();
+        rootGraphics.beginFill(renderer.options.backgroundColor);
+        const gameContainer = new Container();
+        gameContainer.position.set(130, 130);
 
-        stage.addChild(new Container()).name = ELayerName.stage;
-        stage.addChild(new Container()).name = ELayerName.gui;
-        stage.addChild(cont).name = ELayerName.game;
+        stage.addChild(rootContainer);
+        rootContainer.addChild(rootGraphics);
+        rootContainer.addChild(new Container()).name = ELayerName.stage;
+        rootContainer.addChild(new Container()).name = ELayerName.gui;
+        rootContainer.addChild(gameContainer).name = ELayerName.game;
 
         this._systemsList.forEach(system =>
         {
@@ -134,7 +153,7 @@ export class GameEngine extends Engine
         fieldBg.width = 470;
         fieldBg.height = 530;
         fieldBg.position.set(100, 100);
-
+        // UI
         this.addEntity(EntitiesFactory.createUICounter(this.addToLayer(new LevelProgressUI(), ELayerName.gui)));
         this.addEntity(EntitiesFactory.createUICounter(this.addToLayer(new LevelCounterUI(), ELayerName.gui)));
         this.addEntity(EntitiesFactory.createUICounter(this.addToLayer(new TotalPtsCounterUI(), ELayerName.gui)));
@@ -144,6 +163,14 @@ export class GameEngine extends Engine
 
         this.addEntity(EntitiesFactory.createUICounter<PayloadBooster>(this.addToLayer(new BombBoosterCounterUI(), ELayerName.gui), true, {type: EBoosterType.bomb}));
         this.addEntity(EntitiesFactory.createUICounter<PayloadBooster>(this.addToLayer(new TeleportBoosterCounterUI(), ELayerName.gui), true, {type: EBoosterType.teleport}));
+
+        rootGraphics.drawRect(0, 0, 900, 700);
+    }
+
+    public resize(width: number, height: number): void
+    {
+        this._renderer.resize(width, height);
+        this.resizeGame(width, height);
     }
 
     protected onPaneSystemClick(e: TpChangeEvent<boolean>): void
@@ -158,13 +185,13 @@ export class GameEngine extends Engine
 
     public addToLayer(view: Container, layer?: ELayerName): Container
     {
-        return this.stage.getChildByName<Container>(layer ? layer : ELayerName.stage)
+        return this._root.getChildByName<Container>(layer ? layer : ELayerName.stage)
             .addChild(view);
     }
 
     public getLayer(layerName: ELayerName): Container
     {
-        return this.stage.getChildByName<Container>(layerName);
+        return this._root.getChildByName<Container>(layerName);
     }
 
     protected async loadAssets(): Promise<void>
@@ -221,6 +248,15 @@ export class GameEngine extends Engine
     public get stage(): Container
     {
         return this._stage;
+    }
+
+    private resizeGame(appWidth: number, appHeight: number): void
+    {
+        const {width, height} = this._root;
+        let scale: number = Math.min(appWidth / width, appHeight / height);
+        scale = scale > 1 ? 1 : scale;
+
+        this._root.scale.set(scale, scale);
     }
 
     public pause(data: GamePauseData): void
