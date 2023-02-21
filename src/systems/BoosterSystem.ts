@@ -115,11 +115,11 @@ export class BoosterSystem extends AppSystem
 
                                 TileUtils.moveTiles(
                                     tile1, pair1.getComponent(MoveComponent),
-                                    pos1, pos2
+                                    pos1, pos2, 3
                                 );
                                 TileUtils.moveTiles(
                                     tile2, pair2.getComponent(MoveComponent),
-                                    pos2, pos1
+                                    pos2, pos1,3
                                 );
 
                                 level.grid.putCell(gridPos1, tile2);
