@@ -39237,6 +39237,8 @@ class GameEngine extends ecs_1.Engine {
         this._pause = false;
         this._speed = 1;
         this._tickCallback = (dt) => this.update(dt);
+        this._rootWidth = 900;
+        this._rootHeight = 700;
     }
     start(stage, renderer) {
         return __awaiter(this, void 0, void 0, function* () {
@@ -39331,7 +39333,7 @@ class GameEngine extends ecs_1.Engine {
             this.addEntity(EntitiesFactory_1.EntitiesFactory.createUICounter(this.addToLayer(fieldBg, ViewComponent_1.ELayerName.gui)));
             this.addEntity(EntitiesFactory_1.EntitiesFactory.createUICounter(this.addToLayer(new BombBoosterCounterUI_1.BombBoosterCounterUI(), ViewComponent_1.ELayerName.gui), true, { type: EBoosterType_1.EBoosterType.bomb }));
             this.addEntity(EntitiesFactory_1.EntitiesFactory.createUICounter(this.addToLayer(new TeleportBoosterCounterUI_1.TeleportBoosterCounterUI(), ViewComponent_1.ELayerName.gui), true, { type: EBoosterType_1.EBoosterType.teleport }));
-            rootGraphics.drawRect(0, 0, 900, 700);
+            rootGraphics.drawRect(0, 0, this._rootWidth, this._rootHeight);
         });
     }
     resize(width, height) {
@@ -39397,10 +39399,8 @@ class GameEngine extends ecs_1.Engine {
     get stage() {
         return this._stage;
     }
-    resizeGame(appWidth, appHeight) {
-        const { width, height } = this._root;
-        let scale = Math.min(appWidth / width, appHeight / height);
-        scale = scale > 1 ? 1 : scale;
+    resizeGame(screenWidth, screenHeight) {
+        let scale = Math.min(screenWidth / this._rootWidth, screenHeight / this._rootHeight);
         this._root.scale.set(scale, scale);
     }
     pause(data) {
@@ -50378,7 +50378,7 @@ module.exports = {
 /******/ 	
 /******/ 	/* webpack/runtime/getFullHash */
 /******/ 	(() => {
-/******/ 		__webpack_require__.h = () => ("0f5ac30c06a497b2059e")
+/******/ 		__webpack_require__.h = () => ("d5327ab098b009be688c")
 /******/ 	})();
 /******/ 	
 /******/ 	/* webpack/runtime/global */
