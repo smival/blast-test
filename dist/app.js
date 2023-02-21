@@ -39927,8 +39927,8 @@ class BoosterSystem extends AppSystem_1.AppSystem {
                             const tile2 = pair2.getComponent(TileComponent_1.TileComponent);
                             const gridPos1 = tile1.gridPosition.clone();
                             const gridPos2 = tile2.gridPosition.clone();
-                            TileUtils_1.TileUtils.moveTiles(tile1, pair1.getComponent(MoveComponent_1.MoveComponent), pos1, pos2);
-                            TileUtils_1.TileUtils.moveTiles(tile2, pair2.getComponent(MoveComponent_1.MoveComponent), pos2, pos1);
+                            TileUtils_1.TileUtils.moveTiles(tile1, pair1.getComponent(MoveComponent_1.MoveComponent), pos1, pos2, 3);
+                            TileUtils_1.TileUtils.moveTiles(tile2, pair2.getComponent(MoveComponent_1.MoveComponent), pos2, pos1, 3);
                             level.grid.putCell(gridPos1, tile2);
                             level.grid.putCell(gridPos2, tile1);
                             game.useBooster(this.selectedBoosterType);
@@ -40982,12 +40982,15 @@ exports.BaseCounterUI = BaseCounterUI;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.BombBoosterCounterUI = void 0;
 const BaseBoosterCounterUI_1 = __webpack_require__(/*! ./BaseBoosterCounterUI */ "./src/ui/BaseBoosterCounterUI.ts");
+const pixi_js_1 = __webpack_require__(/*! pixi.js */ "./node_modules/pixi.js/dist/cjs/pixi.js");
 class BombBoosterCounterUI extends BaseBoosterCounterUI_1.BaseBoosterCounterUI {
     constructor() {
         super();
         this.name = "bombCounter";
         this.x = 630;
         this.y = 440;
+        this.addChild(pixi_js_1.Sprite.from(pixi_js_1.Texture.from("bomb-icon.png")))
+            .position.set(20, 10);
     }
 }
 exports.BombBoosterCounterUI = BombBoosterCounterUI;
@@ -41190,12 +41193,15 @@ exports.LevelStepsCounterUI = LevelStepsCounterUI;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.TeleportBoosterCounterUI = void 0;
 const BaseBoosterCounterUI_1 = __webpack_require__(/*! ./BaseBoosterCounterUI */ "./src/ui/BaseBoosterCounterUI.ts");
+const pixi_js_1 = __webpack_require__(/*! pixi.js */ "./node_modules/pixi.js/dist/cjs/pixi.js");
 class TeleportBoosterCounterUI extends BaseBoosterCounterUI_1.BaseBoosterCounterUI {
     constructor() {
         super();
         this.name = "teleportCounter";
         this.x = 740;
         this.y = 440;
+        this.addChild(pixi_js_1.Sprite.from(pixi_js_1.Texture.from("swap-icon.png")))
+            .position.set(25, 10);
     }
 }
 exports.TeleportBoosterCounterUI = TeleportBoosterCounterUI;
@@ -50378,7 +50384,7 @@ module.exports = {
 /******/ 	
 /******/ 	/* webpack/runtime/getFullHash */
 /******/ 	(() => {
-/******/ 		__webpack_require__.h = () => ("d5327ab098b009be688c")
+/******/ 		__webpack_require__.h = () => ("2a73b4c02f43f9d0d9fe")
 /******/ 	})();
 /******/ 	
 /******/ 	/* webpack/runtime/global */
