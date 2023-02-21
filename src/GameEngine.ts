@@ -1,13 +1,13 @@
 import {
+    AbstractRenderer,
     Container,
     filters,
+    Graphics,
     Loader,
     NineSlicePlane,
     Texture,
     Ticker,
-    TickerCallback,
-    Graphics,
-    AbstractRenderer
+    TickerCallback
 } from "pixi.js";
 import {Engine} from "@nova-engine/ecs";
 import {IMeta, PayloadBooster} from "./types/IMeta";
@@ -53,6 +53,8 @@ export class GameEngine extends Engine
     private readonly _speed: number = 1;
     private readonly _tickCallback: TickerCallback<any> = (dt) => this.update(dt)
 
+    private _rootWidth: number = 900;
+    private _rootHeight: number = 700;
     private _root: Container;
     private _stage: Container;
     private _renderer: AbstractRenderer;
@@ -164,7 +166,7 @@ export class GameEngine extends Engine
         this.addEntity(EntitiesFactory.createUICounter<PayloadBooster>(this.addToLayer(new BombBoosterCounterUI(), ELayerName.gui), true, {type: EBoosterType.bomb}));
         this.addEntity(EntitiesFactory.createUICounter<PayloadBooster>(this.addToLayer(new TeleportBoosterCounterUI(), ELayerName.gui), true, {type: EBoosterType.teleport}));
 
-        rootGraphics.drawRect(0, 0, 900, 700);
+        rootGraphics.drawRect(0, 0, this._rootWidth, this._rootHeight);
     }
 
     public resize(width: number, height: number): void
@@ -250,12 +252,9 @@ export class GameEngine extends Engine
         return this._stage;
     }
 
-    private resizeGame(appWidth: number, appHeight: number): void
+    private resizeGame(screenWidth: number, screenHeight: number): void
     {
-        const {width, height} = this._root;
-        let scale: number = Math.min(appWidth / width, appHeight / height);
-        scale = scale > 1 ? 1 : scale;
-
+        let scale: number = Math.min(screenWidth / this._rootWidth, screenHeight / this._rootHeight);
         this._root.scale.set(scale, scale);
     }
 
